@@ -7,9 +7,6 @@
       </div>
     </el-header>
     <el-main>
-      <!--<div v-for="(item, index) in articleList" :key="index">
-        <a @click="clickArticle(item.id)">{{item.title}}</a>
-      </div>-->
     </el-main>
     <el-footer>
       <div></div>

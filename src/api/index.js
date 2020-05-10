@@ -60,7 +60,6 @@ function apiAxios (method, path, params, success, failure) {
       // 处理404问题 路径不对,跳转到登陆页面
     } else if (Object.is(status, 405)) {
       // 处理405问题 路径不对
-      router.push({path: '/login'})
     } else if (Object.is(status, 501)) {
       // 处理501问题 服务器问题
     }
