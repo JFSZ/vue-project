@@ -2,7 +2,8 @@
   <el-container class="home_container">
     <el-header>
       <div style="background:white;">
-        <span>博客首页</span>
+        <!--<img src="../assets/logo.png">-->
+        <span>产品展示页</span>
         <el-link style="font-size: 16px;" type="primary" @click="doLogin">登录</el-link>
       </div>
     </el-header>

@@ -16,6 +16,12 @@ const store = new Vuex.Store({
     },
     SET_USER_INFO: (state, userInfo) => {
       state.userInfo = userInfo
+    },
+    DEL_TOKEN: (state) => {
+      state.token = ''
+    },
+    DEL_USER_INFO: (state) => {
+      state.userInfo = ''
     }
   },
   actions: {
@@ -24,6 +30,12 @@ const store = new Vuex.Store({
     },
     getUserInfo ({commit}, userInfo) {
       commit('SET_USER_INFO', userInfo)
+    },
+    delToken ({commit}) {
+      commit('DEL_TOKEN')
+    },
+    delUserInfo ({commit}) {
+      commit('DEL_USER_INFO')
     }
   },
   getters

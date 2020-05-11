@@ -1,7 +1,9 @@
+import Vue from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 import router from '../router'
 import store from '../store'
+import {clearLoginInfo} from '../utils'
 import {
   Message,
   MessageBox
@@ -10,15 +12,15 @@ import {
 // 封装axios工具
 function apiAxios (method, path, params, success, failure) {
   axios({
+    timeout: 1000 * 30,
     method: method,
-    baseUrl: process.env.API_ROOT,
+    baseUrl: Vue.process.env.API_ROOT,
     url: path,
-    data: qs.stringify(params),
-    params: qs.stringify(params),
+    data: Object.is(params, null) ? '' : qs.stringify(params),
+    params: Object.is(params, null) ? '' : qs.stringify(params),
     withCredentials: true, // 允许服务器使用cookies
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': store.state.token
+      'Content-Type': 'application/json; charset=utf-8'
     }
   }).then(res => {
     console.log(res)
@@ -73,6 +75,23 @@ function apiAxios (method, path, params, success, failure) {
       })
     })
 }
+axios.interceptors.request.use(config => {
+  config.headers['token'] = store.state.token // 请求头带上token
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
+axios.interceptors.response.use(response => {
+  if (response.data && response.data.code === 401) { // 401, token失效
+    // 清除登录信息,然后重定向到登录页面
+    clearLoginInfo()
+    router.push({ path: '/login' })
+  }
+  return response
+}, error => {
+  return Promise.reject(error)
+})
 // 上传图片
 function uploadImg (method, path, params, success, failure) {
   axios({
