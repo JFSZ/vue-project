@@ -8,7 +8,7 @@ import api from './api/index'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
-Vue.config.productionTip = false
+/* Vue.config.productionTip = false */
 Vue.prototype.$api = api
 Vue.use(ElementUI)
 // 阻止启动时在浏览器控制台打印生产消息

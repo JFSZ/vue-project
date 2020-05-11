@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import axios from 'axios'
 import qs from 'qs'
 import router from '../router'
@@ -11,11 +10,11 @@ import {
 
 // 封装axios工具
 function apiAxios (method, path, params, success, failure) {
+  console.log('请求地址为:' + process.env.API_ROOT + path)
   axios({
     timeout: 1000 * 30,
     method: method,
-    baseUrl: Vue.process.env.API_ROOT,
-    url: path,
+    url: process.env.API_ROOT + path,
     data: Object.is(params, null) ? '' : qs.stringify(params),
     params: Object.is(params, null) ? '' : qs.stringify(params),
     withCredentials: true, // 允许服务器使用cookies
@@ -94,6 +93,7 @@ axios.interceptors.response.use(response => {
 })
 // 上传图片
 function uploadImg (method, path, params, success, failure) {
+  console.log('请求地址为:' + process.env.API_ROOT + path)
   axios({
     method: method,
     baseURL: process.env.API_ROOT,

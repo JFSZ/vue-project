@@ -94,14 +94,7 @@ export default {
     // 获取验证码
     getCaptcha () {
       this.dataForm.uuid = getUUID()
-      this.$api.get(`/captcha.jpg?uuid=${this.dataForm.uuid}`, null, res => {
-        if (!Object.is(res, null)) {
-          let code = res.code
-          if (Object.is(code, 0)) {
-            this.captchaPath = res.captchaPath
-          }
-        }
-      })
+      this.captchaPath = process.env.API_ROOT + `/sys/captcha.jpg?uuid=${this.dataForm.uuid}`
     }
   }
 }
