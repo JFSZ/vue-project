@@ -8,39 +8,39 @@ import {
   MessageBox
 } from 'element-ui'
 
-// 封装axios工具
-function apiAxios (method, path, params, success, failure) {
-  console.log('请求地址为:' + process.env.API_ROOT + path)
-  axios({
-    timeout: 1000 * 30,
-    method: method,
-    url: process.env.API_ROOT + path,
-    data: Object.is(params, null) ? '' : qs.stringify(params),
-    params: Object.is(params, null) ? '' : qs.stringify(params),
-    withCredentials: true, // 允许服务器使用cookies
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  }).then(res => {
-    console.log(res)
-    let status = res.status
-    let returnFlag = res.data.code
-    if (Object.is(status, 200)) {
-      if (returnFlag === 0) {
-        // 请求成功
-        success(res.data)
-      } else if (returnFlag === 2) {
-        MessageBox.confirm(
-          '登录信息失效,请重新登录!',
-          '确定登出', {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-        ).then(() => {
-          router.push({path: '/login'})
-        })
-      } else if (returnFlag === 4) {
+// 环境的切换
+if (process.env.NODE_ENV === 'development') { // 开发环境
+  axios.defaults.baseURL = '/api/'
+} else if (process.env.NODE_ENV === 'testing') { // 测试环境
+  axios.defaults.baseURL = ''
+} else if (process.env.NODE_ENV === 'production') { // 生产环境
+  axios.defaults.baseURL = 'http://localhost:8083/'
+}
+
+const http = axios.create({
+  timeout: 1000 * 30,
+  withCredentials: true, // 允许服务器使用cookies
+  headers: {
+    'Content-Type': 'application/json; charset=utf-8'
+  }
+})
+
+// 请求拦截
+axios.interceptors.request.use(config => {
+  config.headers['token'] = store.state.token // 请求头带上token
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
+// 响应拦截
+axios.interceptors.response.use(response => {
+  // 成功处理
+  return response
+}, error => {
+  if (error && error.response) {
+    switch (error.response.status) {
+      case 401:
         MessageBox.confirm(
           '没有权限!',
           '温馨提示', {
@@ -51,106 +51,62 @@ function apiAxios (method, path, params, success, failure) {
         ).then(() => {
           router.push({path: '/login'})
         })
-      } else {
-        if (failure) {
-          // 请求失败
-          failure(res.data)
-        }
-      }
-    } else if (Object.is(status, 404)) {
-      // 处理404问题 路径不对,跳转到登陆页面
-    } else if (Object.is(status, 405)) {
-      // 处理405问题 路径不对
-    } else if (Object.is(status, 501)) {
-      // 处理501问题 服务器问题
-    }
-  })
-    .catch((err) => {
-      // 网络或者其他问题
-      Message({
-        message: err.message,
-        type: 'error',
-        duration: 5 * 1000
-      })
-    })
-}
-axios.interceptors.request.use(config => {
-  config.headers['token'] = store.state.token // 请求头带上token
-  return config
-}, error => {
-  return Promise.reject(error)
-})
-
-axios.interceptors.response.use(response => {
-  if (response.data && response.data.code === 401) { // 401, token失效
-    // 清除登录信息,然后重定向到登录页面
-    clearLoginInfo()
-    router.push({ path: '/login' })
-  }
-  return response
-}, error => {
-  return Promise.reject(error)
-})
-// 上传图片
-function uploadImg (method, path, params, success, failure) {
-  console.log('请求地址为:' + process.env.API_ROOT + path)
-  axios({
-    method: method,
-    baseURL: process.env.API_ROOT,
-    url: path,
-    data: params,
-    params: qs.stringify(params),
-    withCredentials: true, // 允许服务器使用cookies
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-    .then(function (res) {
-      let status = res.status
-      let returnFlag = res.data.code
-      if (Object.is(status, 200)) {
-        if (returnFlag === 0) {
-          // 请求成功
-          success(res.data)
-        } else if (returnFlag === 2) {
-          MessageBox.confirm(
-            '登录信息失效,请重新登录!',
-            '确定登出', {
-              confirmButtonText: '重新登录',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }
-          ).then(() => {
+        break
+      case 403:
+        Message({
+          message: error.message,
+          type: 'error',
+          duration: 2 * 1000,
+          onClose: () => {
+            clearLoginInfo()
             router.push({path: '/login'})
-          })
-        } else {
-          // 请求失败
-          failure(res.data)
-        }
-      } else if (Object.is(status, 404)) {
-        // 处理404问题 路径不对
-      } else if (Object.is(status, 501)) {
-        // 处理501问题 服务器问题
-      }
+          }
+        })
+        break
+      case 404:
+        router.push({path: '/login'})
+        break
+      default:
+        Message({
+          message: error.message,
+          type: 'error',
+          duration: 2 * 1000
+        })
+    }
+    return Promise.reject(error)
+  }
+})
+
+// get请求
+function get (url, params) {
+  return new Promise((resolve, reject) => {
+    http.get(url, {
+      params: params
+    }).then(res => {
+      resolve(res.data)
+    }).catch(err => {
+      reject(err.data)
     })
-    .catch(() => {
-      // 网络或者其他问题
-      Message({
-        message: '网络繁忙,请稍后重试...',
-        type: 'error',
-        duration: 5 * 1000
-      })
-    })
+  })
 }
 
+// post 请求
+function post (url, params) {
+  return new Promise((resolve, reject) => {
+    http.post(url, qs.stringify(params))
+      .then(res => {
+        resolve(res.data)
+      })
+      .catch(err => {
+        reject(err.data)
+      })
+  })
+}
 export default {
-  get: function (path, params, success, failure) {
-    return apiAxios('GET', path, params, success, failure)
+  get: function (url, params) {
+    return get(url, params)
   },
-  post: function (path, params, success, failure) {
-    return apiAxios('POST', path, params, success, failure)
-  },
-  uploadImg: function (path, params, success, failure) {
-    return uploadImg('POST', path, params, success, failure)
+  post: function (url, params) {
+    return post(url, params)
   }
 }

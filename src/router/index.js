@@ -1,21 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '../components/index'
-import Login from '../components/login_new'
 
 Vue.use(Router)
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'index',
-      component: Index
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: Login
-    }
-  ]
+const _import = file => require('@/views/' + file + '.vue')
+const globalRoutes = [
+  {path: '/login', component: _import('common/login'), name: 'login', meta: { title: '登录' }}
+]
+
+const router = new Router({
+  model: 'hash',
+
 })
+export default router

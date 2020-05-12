@@ -78,8 +78,9 @@ export default {
       }
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.$api.post('/sys/login', data, res => {
-            let token = res.data.token
+          _this.$api.post('/sys/login', data).then(res => {
+            console.log(res)
+            let token = res.token
             if (res && res.code === 0) {
               _this.$store.dispatch('getToken', token)
               _this.$router.push({path: 'home'})
@@ -94,7 +95,7 @@ export default {
     // 获取验证码
     getCaptcha () {
       this.dataForm.uuid = getUUID()
-      this.captchaPath = process.env.API_ROOT + `/sys/captcha.jpg?uuid=${this.dataForm.uuid}`
+      this.captchaPath = `/api/sys/captcha.jpg?uuid=${this.dataForm.uuid}`
     }
   }
 }
