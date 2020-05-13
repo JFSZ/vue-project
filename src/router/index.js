@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import {clearLoginInfo} from '../utils/index'
+import store from '../store'
 
 Vue.use(Router)
 
@@ -25,7 +26,7 @@ const mainRoutes = {
     { path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } } */
   ],
   beforeEnter (to, from, next) {
-    let token = Vue.cookie.get('token')
+    let token = store.state.token
     if (!token || !/\S/.test(token)) {
       clearLoginInfo()
       next({ path: '/login' })
