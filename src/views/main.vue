@@ -57,9 +57,11 @@ export default {
       set (val) { this.$store.commit('user/updateName', val) }
     }
   },
+  // html加载完成之前，执行。执行顺序：父组件-子组件
   created () {
     this.getUserInfo()
   },
+  // html加载完成后执行。执行顺序：子组件-父组件
   mounted () {
     this.resetDocumentClientHeight()
   },
@@ -73,17 +75,15 @@ export default {
     },
     // 获取当前管理员信息
     getUserInfo () {
-      this.$http({
-        url: this.$http.adornUrl('/sys/user/info'),
-        method: 'get',
-        params: this.$http.adornParams()
-      }).then(({data}) => {
-        if (data && data.code === 0) {
-          this.loading = false
-          this.userId = data.user.userId
-          this.userName = data.user.username
-        }
-      })
+      this.$api.get('/sys/user/info', null)
+        .then(res => {
+          console.log(res)
+          if (res && res.code === 0) {
+            this.loading = false
+            this.userId = res.user.userId
+            this.userName = res.user.username
+          }
+        })
     }
   }
 }

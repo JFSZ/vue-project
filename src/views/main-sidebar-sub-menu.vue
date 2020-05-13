@@ -22,6 +22,7 @@
 
 <script>
 import SubMenu from './main-sidebar-sub-menu'
+import IconSvg from '../components/icon-svg'
 export default {
   name: 'sub-menu',
   props: {
@@ -35,7 +36,8 @@ export default {
     }
   },
   components: {
-    SubMenu
+    SubMenu,
+    IconSvg
   },
   computed: {
     sidebarLayoutSkin: {

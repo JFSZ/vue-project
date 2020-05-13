@@ -77,13 +77,9 @@ export default {
     dataFormSubmit () {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.$http({
-            url: this.$http.adornUrl('/sys/user/password'),
-            method: 'post',
-            data: this.$http.adornData({
-              'password': this.dataForm.password,
-              'newPassword': this.dataForm.newPassword
-            })
+          this.$api.post('/sys/user/password', {
+            'password': this.dataForm.password,
+            'newPassword': this.dataForm.newPassword
           }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
