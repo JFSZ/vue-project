@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import {clearLoginInfo} from '../utils/index'
 import store from '../store'
 import { isURL } from '@/utils/validate'
+import http from '../api'
 
 Vue.use(Router)
 
@@ -51,7 +52,7 @@ router.beforeEach((to, from, next) => {
   if (router.options.isAddDynamicMenuRoutes || fnCurrentRouteType(to, globalRoutes) === 'global') {
     next()
   } else {
-    this.$api.get('/sys/menu/nav', null)
+    http.get('/sys/menu/nav', null)
       .then(res => {
         if (res && res.code === 0) {
           fnAddDynamicMenuRoutes(res.menuList)
@@ -66,7 +67,7 @@ router.beforeEach((to, from, next) => {
         }
       }).catch((e) => {
         console.log(`%c${e} 请求菜单列表和权限失败，跳转至登录页！！`, 'color:blue')
-        router.push({ name: 'login' })
+        router.push({ path: 'login' })
       })
   }
 })
