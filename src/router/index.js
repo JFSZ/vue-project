@@ -38,7 +38,7 @@ const mainRoutes = {
 }
 
 const router = new Router({
-  model: 'history',
+  model: 'hash',
   // 解决vue框架页面跳转有白色不可追踪色块的bug
   scrollBehavior: () => ({ x: 0, y: 0 }),
   routes: globalRoutes.concat(mainRoutes)
@@ -99,6 +99,7 @@ function fnAddDynamicMenuRoutes (menuList = [], routes = []) {
     if (menuList[i].list && menuList[i].list.length >= 1) {
       temp = temp.concat(menuList[i].list)
     } else if (menuList[i].url && /\S/.test(menuList[i].url)) {
+      // 如果菜单url以/开头则替换为 ''
       menuList[i].url = menuList[i].url.replace(/^\//, '')
       var route = {
         path: menuList[i].url.replace('/', '-'),

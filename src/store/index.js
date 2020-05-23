@@ -5,42 +5,26 @@ import common from './modules/common'
 import user from './modules/user'
 Vue.use(Vuex)
 const store = new Vuex.Store({
+  // 模块化状态管理
   modules: {
     common,
     user
   },
+  // 存放状态
   state: {
-    token: '',
-    userInfo: ''
+    token: ''
   },
+  // state成员操作
   mutations: {
-    SET_TOKEN: (state, token) => {
+    setToken: (state, token) => {
       state.token = token
-    },
-    SET_USER_INFO: (state, userInfo) => {
-      state.userInfo = userInfo
-    },
-    DEL_TOKEN: (state) => {
-      state.token = ''
-    },
-    DEL_USER_INFO: (state) => {
-      state.userInfo = ''
     }
   },
+  // 异步操作
   actions: {
-    getToken ({ commit }, token) {
-      commit('SET_TOKEN', token)
-    },
-    getUserInfo ({commit}, userInfo) {
-      commit('SET_USER_INFO', userInfo)
-    },
-    delToken ({commit}) {
-      commit('DEL_TOKEN')
-    },
-    delUserInfo ({commit}) {
-      commit('DEL_USER_INFO')
-    }
+
   },
+  // 加工state成员给外界
   getters
 })
 export default store

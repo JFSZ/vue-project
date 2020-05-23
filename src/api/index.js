@@ -1,5 +1,4 @@
 import axios from 'axios'
-import qs from 'qs'
 import router from '../router'
 import store from '../store'
 import {clearLoginInfo} from '../utils'
@@ -10,14 +9,14 @@ import {
 
 // 环境的切换
 if (process.env.NODE_ENV === 'development') { // 开发环境
-  axios.defaults.baseURL = '/api/'
+  axios.defaults.baseURL = 'http://localhost:8082/'
 } else if (process.env.NODE_ENV === 'testing') { // 测试环境
   axios.defaults.baseURL = ''
 } else if (process.env.NODE_ENV === 'production') { // 生产环境
   axios.defaults.baseURL = 'http://localhost:8083/'
 }
 
-const http = axios.create({
+axios.create({
   timeout: 1000 * 30,
   withCredentials: true, // 允许服务器使用cookies
   headers: {
@@ -80,7 +79,7 @@ axios.interceptors.response.use(response => {
 // get请求
 function get (url, params) {
   return new Promise((resolve, reject) => {
-    http.get(url, {
+    axios.get(url, {
       params: params
     }).then(res => {
       resolve(res.data)
@@ -92,13 +91,14 @@ function get (url, params) {
 
 // post 请求
 function post (url, params) {
+  console.log('请求路径为:' + url)
   return new Promise((resolve, reject) => {
-    http.post(url, qs.stringify(params))
+    axios.post(url, params)
       .then(res => {
         resolve(res.data)
       })
       .catch(err => {
-        reject(err.data)
+        reject(err)
       })
   })
 }
@@ -108,5 +108,6 @@ export default {
   },
   post: function (url, params) {
     return post(url, params)
-  }
+  },
+  baseUrl: axios.defaults.baseURL
 }

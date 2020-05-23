@@ -39,6 +39,7 @@
 
 <script>
 import {getUUID} from '../../utils'
+import store from '../../store'
 
 export default {
   data () {
@@ -80,9 +81,13 @@ export default {
         if (valid) {
           _this.$api.post('/sys/login', data).then(res => {
             console.log(res)
-            let token = res.token
-            if (res && res.code === 0) {
-              _this.$store.dispatch('getToken', token)
+            console.log(Object.is(res.code, 0))
+            if (res && Object.is(res.code, 0)) {
+              let token = res.token
+              console.log(token)
+              _this.$store.commit('setToken', token)
+              localStorage.setItem('token', token)
+              console.log(store.state.token)
               _this.$router.push({path: 'home'})
             } else {
               _this.getCaptcha()
@@ -95,7 +100,7 @@ export default {
     // 获取验证码
     getCaptcha () {
       this.dataForm.uuid = getUUID()
-      this.captchaPath = `/api/sys/captcha.jpg?uuid=${this.dataForm.uuid}`
+      this.captchaPath = this.$api.baseUrl + `/sys/captcha.jpg?uuid=${this.dataForm.uuid}`
     }
   }
 }

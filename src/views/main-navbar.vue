@@ -2,8 +2,8 @@
   <nav class="site-navbar" :class="'site-navbar--' + navbarLayoutType">
     <div class="site-navbar__header">
       <h1 class="site-navbar__brand" @click="$router.push({ name: 'home' })">
-        <a class="site-navbar__brand-lg" href="javascript:;">人人快速开发平台</a>
-        <a class="site-navbar__brand-mini" href="javascript:;">人人</a>
+        <a class="site-navbar__brand-lg" href="javascript:;">后台管理系统</a>
+        <a class="site-navbar__brand-mini" href="javascript:;">后台</a>
       </h1>
     </div>
     <div class="site-navbar__body clearfix">
@@ -98,7 +98,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$api.post('/sys/logout', this.$http.adornData())
+        this.$api.post('/sys/logout', null)
           .then(({data}) => {
             if (data && data.code === 0) {
               clearLoginInfo()
