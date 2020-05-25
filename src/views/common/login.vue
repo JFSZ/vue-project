@@ -88,7 +88,7 @@ export default {
               _this.$store.commit('setToken', token)
               localStorage.setItem('token', token)
               console.log(store.state.token)
-              _this.$router.push({path: 'home'})
+              _this.$router.push({name: 'home'})
             } else {
               _this.getCaptcha()
               _this.$message.error(data.msg)

@@ -99,10 +99,10 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$api.post('/sys/logout', null)
-          .then(({data}) => {
+          .then(data => {
             if (data && data.code === 0) {
               clearLoginInfo()
-              this.$router.push({path: '/login'})
+              this.$router.push({name: 'login'})
             }
           })
       }).catch(() => {})

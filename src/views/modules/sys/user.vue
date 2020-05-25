@@ -34,7 +34,7 @@
         label="ID">
       </el-table-column>
       <el-table-column
-        prop="userName"
+        prop="username"
         header-align="center"
         align="center"
         label="用户名">
@@ -56,12 +56,20 @@
         header-align="center"
         align="center"
         label="状态">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </template>
       </el-table-column>
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
         label="创建时间">
+        <template slot-scope="scope">{{scope.row.createTime | dataFormat}}</template>
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -108,7 +116,8 @@ export default{
       }
       this.$api.get('/sys/user/list', dataList)
         .then(res => {
-          if (res && Object.is(res.code, 0)) {
+          console.log(res)
+          if (res) {
             this.userList = res.list
             this.totalPage = res.totalPage
           }

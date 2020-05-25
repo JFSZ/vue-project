@@ -15,7 +15,7 @@ const mainRoutes = {
   path: '/',
   component: _import('main'),
   name: 'main',
-  redirect: { path: '/home' },
+  redirect: { name: 'home' },
   meta: { title: '主入口整体布局' },
   children: [
     // 通过meta对象设置路由展示方式
@@ -31,7 +31,7 @@ const mainRoutes = {
     let token = store.state.token
     if (!token || !/\S/.test(token)) {
       clearLoginInfo()
-      next({ path: '/login' })
+      next({ name: 'login' })
     }
     next()
   }
@@ -67,7 +67,7 @@ router.beforeEach((to, from, next) => {
         }
       }).catch((e) => {
         console.log(`%c${e} 请求菜单列表和权限失败，跳转至登录页！！`, 'color:blue')
-        router.push({ path: 'login' })
+        router.push({ name: 'login' })
       })
   }
 })
