@@ -1,30 +1,12 @@
-# vue-project
+# 后台管理系统
 
-> A Vue.js project
+> 后台管理系统
 
-## Build Setup
+## 后台管理系统
+- 前端动态路由，由后端提供menu列表。统一在前端解析处理。
+- 前端页面根据后端菜单路径url创建,需要在modules目录下创建。每个 '/' 都是目录。
+    前端路径跳转使用name跳转。
 
-``` bash
-# install dependencies
-npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
 
-# build for production with minification
-npm run build
 
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
-```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
