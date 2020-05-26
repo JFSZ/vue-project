@@ -1,13 +1,13 @@
 <template>
   <div class="mod-user">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getUserList()">
       <el-form-item>
-        <el-input v-model="dataForm.username" placeholder="用户名" clearable></el-input>
+        <el-input v-model="dataForm.username" placeholder="用户名/手机号" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()" type="primary" icon="el-icon-search">查询</el-button>
-        <el-button v-if="isAuth('sys:user:add')" @click="addUser()" type="success">新增</el-button>
-        <el-button v-if="isAuth('sys:user:delete')" @click="delUser()" type="danger"
+        <el-button @click="getUserList()" type="primary" icon="el-icon-search">查询</el-button>
+        <el-button v-if="isAuth('sys:user:save')" @click="addUser()" type="success">新增</el-button>
+        <el-button v-if="isAuth('sys:user:delete')" @click="batchDelUser()" type="danger"
                    :disabled="selectedList.length <= 0">批量删除
         </el-button>
       </el-form-item>
@@ -127,11 +127,10 @@ export default{
       let dataList = {
         page: this.pageIndex,
         limit: this.pageSize,
-        username: this.dataForm.userName
+        username: this.dataForm.userName ? this.dataForm.userName : ''
       }
       this.$api.get('/sys/user/list', dataList)
         .then(res => {
-          console.log(res)
           if (res) {
             this.userList = res.list
             this.totalPage = res.totalPage
@@ -147,7 +146,7 @@ export default{
 
     },
     // 批量删除用户
-    delUser () {
+    batchDelUser () {
 
     },
     // 选中事件
