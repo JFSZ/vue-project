@@ -39,7 +39,6 @@
 
 <script>
 import {getUUID} from '../../utils'
-import store from '../../store'
 
 export default {
   data () {
@@ -80,14 +79,10 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           _this.$api.post('/sys/login', data).then(res => {
-            console.log(res)
-            console.log(Object.is(res.code, 0))
             if (res && Object.is(res.code, 0)) {
               let token = res.token
-              console.log(token)
               _this.$store.commit('setToken', token)
               localStorage.setItem('token', token)
-              console.log(store.state.token)
               _this.$router.push({name: 'home'})
             } else {
               _this.getCaptcha()

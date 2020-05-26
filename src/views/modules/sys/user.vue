@@ -59,8 +59,13 @@
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
+            active-color="#00A854"
+            active-value="0"
+            active-text="启用"
+            inactive-color="#ff4949"
+            inactive-text="禁用"
+            inactive-value="1"
+            @change="editUser()">
           </el-switch>
         </template>
       </el-table-column>
@@ -69,7 +74,7 @@
         header-align="center"
         align="center"
         label="创建时间">
-        <template slot-scope="scope">{{scope.row.createTime | dataFormat}}</template>
+        <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -78,11 +83,21 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:user:update')" @click="editUser(scope.row.userId)" type="text" size="small">编辑</el-button>
-          <el-button v-if="isAuth('sys:user:delete')" @click="deleteUser(scope.row.userId)" type="danger" size="small">删除</el-button>
+          <el-button v-if="isAuth('sys:user:update')" @click="editUser(scope.row.userId)" type="primary" icon="el-icon-edit" size="small"></el-button>
+          <el-button v-if="isAuth('sys:user:delete')" @click="deleteUser(scope.row.userId)" type="danger" icon="el-icon-delete" size="small"></el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pageIndex"
+      :page-sizes="[10, 20, 50, 100]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="totalPage">
+    </el-pagination>
   </div>
 </template>
 <script>
@@ -103,11 +118,11 @@ export default{
   // 在vue对象存活的情况下，进入当前存在activated()函数的页面时，
   // 一进入页面就触发；可用于初始化页面数据等。这个用于每次只要进入这个组件页面就初始化页面，可以用于列表数据等的刷新
   activated () {
-    this.getDataList()
+    this.getUserList()
   },
   methods: {
     // 获取用户列表
-    getDataList () {
+    getUserList () {
       this.userListLoading = true
       let dataList = {
         page: this.pageIndex,
@@ -120,6 +135,9 @@ export default{
           if (res) {
             this.userList = res.list
             this.totalPage = res.totalPage
+          } else {
+            this.userList = []
+            this.totalPage = 0
           }
           this.userListLoading = false
         }).catch()
@@ -141,6 +159,15 @@ export default{
     },
     // 删除单个用户
     deleteUser: function (userId) {
+    },
+    handleSizeChange: function (val) {
+      this.pageSize = val
+      this.pageIndex = 1
+      this.getUserList()
+    },
+    handleCurrentChange: function (val) {
+      this.pageIndex = val
+      this.getUserList()
     }
   }
 }
