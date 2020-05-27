@@ -127,7 +127,7 @@ export default{
       let dataList = {
         page: this.pageIndex,
         limit: this.pageSize,
-        username: this.dataForm.userName ? this.dataForm.userName : ''
+        username: this.dataForm.username ? this.dataForm.username : ''
       }
       this.$api.get('/sys/user/list', dataList)
         .then(res => {
@@ -158,6 +158,37 @@ export default{
     },
     // 删除单个用户
     deleteUser: function (userId) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let data = [userId]
+        this.$api.post('/sys/user/delete', data)
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '删除失败!'
+              })
+            }
+          }).catch(
+            this.$message({
+              type: 'error',
+              message: '系统异常!'
+            })
+          )
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     handleSizeChange: function (val) {
       this.pageSize = val
