@@ -18,15 +18,13 @@ if (process.env.NODE_ENV === 'development') { // 开发环境
 
 axios.create({
   timeout: 1000 * 30,
-  withCredentials: true, // 允许服务器使用cookies
-  headers: {
-    'Content-Type': 'application/json; charset=utf-8'
-  }
+  withCredentials: true // 允许服务器使用cookies
 })
 
 // 请求拦截
 axios.interceptors.request.use(config => {
   config.headers['token'] = store.state.token // 请求头带上token
+  config.headers['Content-Type'] = 'application/json; charset=UTF-8'
   return config
 }, error => {
   return Promise.reject(error)

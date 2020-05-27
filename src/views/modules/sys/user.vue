@@ -7,18 +7,17 @@
       <el-form-item>
         <el-button @click="getUserList()" type="primary" icon="el-icon-search">查询</el-button>
         <el-button v-if="isAuth('sys:user:save')" @click="addUser()" type="success">新增</el-button>
-        <el-button v-if="isAuth('sys:user:delete')" @click="batchDelUser()" type="danger"
+        <el-button v-if="isAuth('sys:user:delete')" @click="deleteUser()" type="danger"
                    :disabled="selectedList.length <= 0">批量删除
         </el-button>
       </el-form-item>
     </el-form>
     <el-table
-      ref="selectedList"
       border
       :data="userList"
       v-loading="userListLoading"
       tooltip-effect="dark"
-      @select-change="handleSelectionChange"
+      @selection-change="handleSelectionChange"
       style="width: 100%">
       <el-table-column
         type="selection"
@@ -145,10 +144,6 @@ export default{
     addUser () {
 
     },
-    // 批量删除用户
-    batchDelUser () {
-
-    },
     // 选中事件
     handleSelectionChange: function (val) {
       this.selectedList = val
@@ -157,19 +152,26 @@ export default{
     editUser: function (userId) {
     },
     // 删除单个用户
-    deleteUser: function (userId) {
+    deleteUser: function (userIds) {
+      let data = userIds ? [userIds] : this.selectedList.map(item => {
+        return item.userId
+      })
+      console.log(userIds)
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let data = [userId]
-        this.$api.post('/sys/user/delete', data)
+        this.$api.post('/sys/user/delete', JSON.stringify(data))
           .then(res => {
             if (Object.is(res.code, 0)) {
               this.$message({
                 type: 'success',
-                message: '删除成功!'
+                message: '删除成功!',
+                duration: 1500,
+                onClose: () => {
+                  this.getUserList()
+                }
               })
             } else {
               this.$message({
@@ -177,11 +179,9 @@ export default{
                 message: '删除失败!'
               })
             }
-          }).catch(
-            this.$message({
-              type: 'error',
-              message: '系统异常!'
-            })
+          }).catch((err) => {
+            this.$message.error(err)
+          }
           )
       }).catch(() => {
         this.$message({
