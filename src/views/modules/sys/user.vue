@@ -97,9 +97,11 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalPage">
     </el-pagination>
+    <saveOrUpdateUser @refreshDataList="getUserList"></saveOrUpdateUser>
   </div>
 </template>
 <script>
+import saveOrUpdateUser from './user_add_or_update'
 export default{
   data () {
     return {
@@ -118,6 +120,9 @@ export default{
   // 一进入页面就触发；可用于初始化页面数据等。这个用于每次只要进入这个组件页面就初始化页面，可以用于列表数据等的刷新
   activated () {
     this.getUserList()
+  },
+  comments: {
+    saveOrUpdateUser
   },
   methods: {
     // 获取用户列表
