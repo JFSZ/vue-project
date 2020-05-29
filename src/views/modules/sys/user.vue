@@ -6,7 +6,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getUserList()" type="primary" icon="el-icon-search">查询</el-button>
-        <el-button v-if="isAuth('sys:user:save')" @click="addUser()" type="success">新增</el-button>
+        <el-button v-if="isAuth('sys:user:save')" @click="addOrUpdateUser()" type="success">新增</el-button>
         <el-button v-if="isAuth('sys:user:delete')" @click="deleteUser()" type="danger"
                    :disabled="selectedList.length <= 0">批量删除
         </el-button>
@@ -82,7 +82,7 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:user:update')" @click="editUser(scope.row.userId)" type="primary" icon="el-icon-edit" size="small"></el-button>
+          <el-button v-if="isAuth('sys:user:update')" @click="addOrUpdateUser(scope.row.userId)" type="primary" icon="el-icon-edit" size="small"></el-button>
           <el-button v-if="isAuth('sys:user:delete')" @click="deleteUser(scope.row.userId)" type="danger" icon="el-icon-delete" size="small"></el-button>
         </template>
       </el-table-column>
@@ -97,7 +97,7 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalPage">
     </el-pagination>
-    <saveOrUpdateUser @refreshDataList="getUserList"></saveOrUpdateUser>
+    <saveOrUpdateUser ref="addOrUpdate" @refreshDataList="getUserList"></saveOrUpdateUser>
   </div>
 </template>
 <script>
@@ -146,15 +146,14 @@ export default{
         }).catch()
     },
     // 新增用户
-    addUser () {
-
+    addOrUpdateUser (userId) {
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(userId)
+      })
     },
     // 选中事件
     handleSelectionChange: function (val) {
       this.selectedList = val
-    },
-    // 编辑用户信息
-    editUser: function (userId) {
     },
     // 删除单个用户
     deleteUser: function (userIds) {

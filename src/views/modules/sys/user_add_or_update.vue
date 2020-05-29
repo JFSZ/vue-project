@@ -89,6 +89,9 @@ export default{
     }
   },
   methods: {
+    init: function (userId) {
+
+    },
     saveOrUpdate: function () {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
