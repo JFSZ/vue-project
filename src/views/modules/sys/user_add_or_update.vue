@@ -2,8 +2,9 @@
   <el-dialog
     :title="!userForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
-    :visible.sync="visible">
-    <el-form :model="userForm" :rules="rules" ref="userForm" @keyup.enter.native="saveOrUpdate()" label-width="80px">
+    :visible.sync="visible"
+    width="570px">
+    <el-form :model="userForm" :rules="rules" ref="userForm" @keyup.enter.native="saveOrUpdate()" label-width="67px" size="small" :inline="true">
       <el-form-item label="用户名" >
         <el-input v-model="userForm.userName"></el-input>
       </el-form-item>
