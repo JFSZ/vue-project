@@ -3,21 +3,22 @@
     :title="!userForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible"
-    width="570px">
-    <el-form :model="userForm" :rules="rules" ref="userForm" @keyup.enter.native="saveOrUpdate()" label-width="67px" size="small" :inline="true">
-      <el-form-item label="用户名" >
-        <el-input v-model="userForm.userName"></el-input>
+    width="570px"
+    append-to-body>
+    <el-form :model="userForm" :rules="rules" ref="userForm" @keyup.enter.native="saveOrUpdate()" label-width="67px" size="small" :inline="true" >
+      <el-form-item label="用户名" prop="userName">
+        <el-input v-model="userForm.userName" placeholder="登录帐号"></el-input>
       </el-form-item>
-      <el-form-item label="密码" >
+      <el-form-item label="密码" prop="password">
         <el-input v-model="userForm.password"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" >
+      <el-form-item label="确认密码" prop="confirmPassWord">
         <el-input v-model="userForm.confirmPassWord"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" >
+      <el-form-item label="邮箱" prop="email">
         <el-input v-model="userForm.email"></el-input>
       </el-form-item>
-      <el-form-item label="电话" >
+      <el-form-item label="电话" prop="mobile">
         <el-input v-model="userForm.mobile"></el-input>
       </el-form-item>
       <el-form-item label="状态" >
@@ -94,16 +95,16 @@ export default{
           {max: 15, message: '用户名长度不可大于15', trigger: 'blur'}
         ],
         password: [
-          {validator: validatePassWord, trigger: 'blur'}
+          {require: true, validator: validatePassWord, trigger: 'blur'}
         ],
         confirmPassWord: [
-          {validator: validateConfirm, trigger: 'blur'}
+          {require: true, validator: validateConfirm, trigger: 'blur'}
         ],
         email: [
-          {validator: validateEmail, trigger: 'blur'}
+          {require: true, validator: validateEmail, trigger: 'blur'}
         ],
         mobile: [
-          {validator: validateMobile, trigger: 'blur'}
+          {require: true, validator: validateMobile, trigger: 'blur'}
         ]
       }
     }
