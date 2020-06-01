@@ -38,7 +38,7 @@ const mainRoutes = {
 }
 
 const router = new Router({
-  model: 'hash',
+  model: 'history',
   // 解决vue框架页面跳转有白色不可追踪色块的bug
   scrollBehavior: () => ({ x: 0, y: 0 }),
   routes: globalRoutes.concat(mainRoutes)

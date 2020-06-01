@@ -3,32 +3,34 @@
     :title="!userForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible"
-    width="570px"
+    width="620px"
     append-to-body>
-    <el-form :model="userForm" :rules="rules" ref="userForm" @keyup.enter.native="saveOrUpdate()" label-width="67px" size="small" :inline="true" >
+    <el-form :model="userForm" :rules="rules" ref="userForm" @keyup.enter.native="saveOrUpdate()" label-width="85px" size="small" :inline="true" >
       <el-form-item label="用户名" prop="userName">
-        <el-input v-model="userForm.userName" placeholder="登录帐号"></el-input>
+        <el-input class="textarea" v-model="userForm.userName" placeholder="登录帐号"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input v-model="userForm.password"></el-input>
+        <el-input v-model="userForm.password" type="password" placeholder="密码"></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="confirmPassWord">
-        <el-input v-model="userForm.confirmPassWord"></el-input>
+        <el-input v-model="userForm.confirmPassWord" type="password" placeholder="确认密码"></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model="userForm.email"></el-input>
+        <el-input v-model="userForm.email" placeholder="邮箱"></el-input>
       </el-form-item>
       <el-form-item label="电话" prop="mobile">
-        <el-input v-model="userForm.mobile"></el-input>
+        <el-input v-model="userForm.mobile" placeholder="手机号"></el-input>
       </el-form-item>
       <el-form-item label="状态" >
-        <el-input v-model="userForm.status"></el-input>
+        <el-radio-group v-model="userForm.status">
+          <el-radio :label="true">正常</el-radio>
+          <el-radio :label="false">禁用</el-radio>
+        </el-radio-group>
       </el-form-item>
-      <el-form-item label="角色" >
+      <el-form-item label="角色" prop="roleIdList" style="margin-bottom: 0;">
         <el-select v-model="userForm.roleIdList"
            multiple
-           collapse-tags
-           style="margin-left: 20px;"
+           style="width: 450px"
            placeholder="请选择" >
           <el-option v-for="role in roleList"
           :key="role.roleId"
@@ -48,15 +50,17 @@
 import { isEmail, isMobile } from '@/utils/validate'
 export default{
   data () {
-    var validatePassWord = (rule, value, callback) => {
-      if (!this.userForm.id && /\S/.test(value)) {
-        callback(new Error('密码不能为空!'))
+    var validatePassword = (rule, value, callback) => {
+      if (!this.userForm.id && !/\S/.test(value)) {
+        callback(new Error('密码不能为空'))
       } else {
         callback()
       }
     }
     var validateConfirm = (rule, value, callback) => {
-      if (!Object.is(value, this.userForm.password)) {
+      if (!this.userForm.id && !/\S/.test(value)) {
+        callback(new Error('确认密码不能为空'))
+      } else if (this.userForm.password !== value) {
         callback(new Error('两次输入密码不一致'))
       } else {
         callback()
@@ -91,20 +95,22 @@ export default{
       },
       rules: {
         userName: [
-          {require: true, message: '请输入用户名', trigger: 'blur'},
-          {max: 15, message: '用户名长度不可大于15', trigger: 'blur'}
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 2, max: 15, message: '用户名长度不可大于15', trigger: 'blur' }
         ],
         password: [
-          {require: true, validator: validatePassWord, trigger: 'blur'}
+          { validator: validatePassword, trigger: 'blur' }
         ],
         confirmPassWord: [
-          {require: true, validator: validateConfirm, trigger: 'blur'}
+          { validator: validateConfirm, trigger: 'blur' }
         ],
         email: [
-          {require: true, validator: validateEmail, trigger: 'blur'}
+          { required: true, message: '邮箱不能为空', trigger: 'blur' },
+          {validator: validateEmail, trigger: 'blur'}
         ],
         mobile: [
-          {require: true, validator: validateMobile, trigger: 'blur'}
+          { required: true, message: '手机号不能为空', trigger: 'blur' },
+          {validator: validateMobile, trigger: 'blur'}
         ]
       }
     }
@@ -112,10 +118,7 @@ export default{
   methods: {
     init: function (userId) {
       this.userForm.id = userId || 0
-      let data = {
-        'userId': userId
-      }
-      this.$api.get('/sys/role/queryByUserId', data)
+      this.$api.get('/sys/role/queryByUserId', null)
         .then(res => {
           if (Object.is(res.code, 0)) {
             this.roleList = res.list
@@ -145,7 +148,7 @@ export default{
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
           let data = {
-            'id': this.userForm.id || undefined,
+            'userId': this.userForm.id || undefined,
             'username': this.userForm.userName,
             'password': this.userForm.password,
             'email': this.userForm.email,
@@ -159,8 +162,9 @@ export default{
                 this.$message({
                   message: '操作成功',
                   type: 'success',
-                  duration: 2000,
+                  duration: 1500,
                   onClose: () => {
+                    this.visible = false
                     this.$emit('refreshDataList')
                   }
                 })

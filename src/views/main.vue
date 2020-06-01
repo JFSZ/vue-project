@@ -75,7 +75,7 @@ export default {
     },
     // 获取当前管理员信息
     getUserInfo () {
-      this.$api.get('/sys/user/info', null)
+      this.$api.get('/sys/user/getUserInfo', null)
         .then(res => {
           console.log(res)
           if (res && res.code === 0) {

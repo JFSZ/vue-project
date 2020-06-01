@@ -58,13 +58,9 @@
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
-            active-color="#00A854"
-            active-value="0"
-            active-text="启用"
-            inactive-color="#ff4949"
-            inactive-text="禁用"
-            inactive-value="1"
-            @change="editUser()">
+            active-color="#409EFF"
+            inactive-color="#F56C6C"
+            @change="editUser(scope.row, scope.row.status)">
           </el-switch>
         </template>
       </el-table-column>
@@ -203,6 +199,28 @@ export default{
     handleCurrentChange: function (val) {
       this.pageIndex = val
       this.getUserList()
+    },
+    editUser: function (data, val) {
+      this.$confirm('此操作将 "' + (val ? '禁用' : '激活') + '" ' + data.username + ', 是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(res => {
+        this.$api.post('/sys/user/update', JSON.stringify(data))
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$notify({
+                title: '成功',
+                message: (val ? '禁用' : '激活') + '成功!',
+                type: 'success'
+              })
+            }
+          }).catch(() => {
+            data.status = !data.status
+          })
+      }).catch(() => {
+        data.status = !data.status
+      })
     }
   }
 }
