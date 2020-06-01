@@ -23,7 +23,11 @@ axios.create({
 
 // 请求拦截
 axios.interceptors.request.use(config => {
-  config.headers['token'] = store.state.token // 请求头带上token
+  if (store.state.token) {
+    config.headers['token'] = store.state.token // 请求头带上token
+  } else {
+    router.push({name: 'login'})
+  }
   config.headers['Content-Type'] = 'application/json; charset=UTF-8'
   return config
 }, error => {
@@ -46,7 +50,7 @@ axios.interceptors.response.use(response => {
             type: 'warning'
           }
         ).then(() => {
-          router.push({path: '/login'})
+          router.push({name: 'login'})
         })
         break
       case 403:
@@ -56,12 +60,12 @@ axios.interceptors.response.use(response => {
           duration: 2 * 1000,
           onClose: () => {
             clearLoginInfo()
-            router.push({path: '/login'})
+            router.push({name: 'login'})
           }
         })
         break
       case 404:
-        router.push({path: '/login'})
+        router.push({name: 'login'})
         break
       default:
         Message({
