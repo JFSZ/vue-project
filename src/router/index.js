@@ -5,7 +5,11 @@ import { isURL } from '@/utils/validate'
 import http from '../api'
 
 Vue.use(Router)
-
+// 解决路由跳转报错:Uncaught (in promise) NavigationDuplicated
+const originalPush = Router.prototype.push
+Router.prototype.push = function push (to) {
+  return originalPush.call(this, to).catch(err => err)
+}
 const _import = file => require('@/views/' + file + '.vue')
 const globalRoutes = [
   {path: '/login', component: _import('common/login'), name: 'login', meta: { title: '登录' }},
@@ -28,7 +32,7 @@ const mainRoutes = {
     { path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } } */
   ],
   beforeEnter (to, from, next) {
-    let token = localStorage.getItem('token')
+    let token = Vue.cookie.get('token')
     if (!token || !/\S/.test(token)) {
       clearLoginInfo()
       next({ name: 'login' })
@@ -39,22 +43,20 @@ const mainRoutes = {
 
 const router = new Router({
   model: 'history',
-  // 解决vue框架页面跳转有白色不可追踪色块的bug
   scrollBehavior: () => ({ x: 0, y: 0 }),
+  // 解决vue框架页面跳转有白色不可追踪色块的bug
+  isAddDynamicMenuRoutes: false, // 是否已经添加动态(菜单)路由
   routes: globalRoutes.concat(mainRoutes)
 
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(to.path + '--' + 'from' + from.name)
   // 添加动态(菜单)路由
   // 1. 已经添加 or 全局路由, 直接访问
   // 2. 获取菜单列表, 添加并保存本地存储
   if (router.options.isAddDynamicMenuRoutes || fnCurrentRouteType(to, globalRoutes) === 'global') {
-    console.log('已存在路由')
     next()
   } else {
-    console.log('不存在路由')
     http.get('/sys/menu/nav', null)
       .then(res => {
         if (res && res.code === 0) {

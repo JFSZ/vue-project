@@ -81,9 +81,8 @@ export default {
           _this.$api.post('/sys/login', data).then(res => {
             if (res && Object.is(res.code, 0)) {
               let token = res.token
-              _this.$store.commit('setToken', token)
-              localStorage.setItem('token', token)
-              _this.$router.push({name: 'home'})
+              this.$cookie.set('token', token)
+              _this.$router.replace({name: 'home'})
             } else {
               _this.getCaptcha()
               _this.$message.error(data.msg)

@@ -1,6 +1,6 @@
 import axios from 'axios'
+import Vue from 'vue'
 import router from '../router'
-import store from '../store'
 import {clearLoginInfo} from '../utils'
 import {
   Message,
@@ -23,8 +23,8 @@ axios.create({
 
 // 请求拦截
 axios.interceptors.request.use(config => {
-  if (store.state.token) {
-    config.headers['token'] = store.state.token // 请求头带上token
+  if (Vue.cookie.get('token')) {
+    config.headers['token'] = Vue.cookie.get('token') // 请求头带上token
   } else {
     router.push({name: 'login'})
   }
