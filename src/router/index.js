@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import {clearLoginInfo} from '../utils/index'
-import store from '../store'
 import { isURL } from '@/utils/validate'
 import http from '../api'
 
@@ -9,7 +8,8 @@ Vue.use(Router)
 
 const _import = file => require('@/views/' + file + '.vue')
 const globalRoutes = [
-  {path: '/login', component: _import('common/login'), name: 'login', meta: { title: '登录' }}
+  {path: '/login', component: _import('common/login'), name: 'login', meta: { title: '登录' }},
+  {path: '/404', component: _import('common/404'), name: '404', meta: { title: '404' }}
 ]
 const mainRoutes = {
   path: '/',
@@ -28,7 +28,7 @@ const mainRoutes = {
     { path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } } */
   ],
   beforeEnter (to, from, next) {
-    let token = store.state.token
+    let token = localStorage.getItem('token')
     if (!token || !/\S/.test(token)) {
       clearLoginInfo()
       next({ name: 'login' })
@@ -46,12 +46,15 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+  console.log(to.path + '--' + 'from' + from.name)
   // 添加动态(菜单)路由
   // 1. 已经添加 or 全局路由, 直接访问
   // 2. 获取菜单列表, 添加并保存本地存储
   if (router.options.isAddDynamicMenuRoutes || fnCurrentRouteType(to, globalRoutes) === 'global') {
+    console.log('已存在路由')
     next()
   } else {
+    console.log('不存在路由')
     http.get('/sys/menu/nav', null)
       .then(res => {
         if (res && res.code === 0) {

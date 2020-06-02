@@ -24,6 +24,6 @@ new Vue({
   el: '#app',
   router,
   store, // 使用Vuex
-  components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  components: { App }
 })
