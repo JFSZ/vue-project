@@ -38,7 +38,6 @@
 <script>
 import SubMenu from './main-sidebar-sub-menu'
 import { isURL } from '@/utils/validate'
-import IconSvg from '../components/icon-svg'
 export default {
   data () {
     return {

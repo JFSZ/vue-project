@@ -21,7 +21,8 @@ Vue.use(VueCookie)
 // 阻止启动时在浏览器控制台打印生产消息
 Vue.config.productionTip = false
 Vue.prototype.isAuth = isAuth // 权限方法
-/* eslint-disable no-new */
+
+// eslint-disable-next-line no-new
 new Vue({
   el: '#app',
   router,
