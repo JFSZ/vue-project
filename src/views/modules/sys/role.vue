@@ -15,7 +15,6 @@
     <el-table
       border
       :data="roleList"
-      v-loading="userListLoading"
       tooltip-effect="dark"
       @selection-change="handleSelectionChange"
       style="width: 100%">
@@ -82,7 +81,7 @@ export default {
       dataForm: {
         roleName: ''
       },
-      selectList: [], // 选中数据
+      selectedList: [], // 选中数据
       roleList: [],
       totalPage: 0, // 记录总条数
       pageSize: 10, // 每页记录数据
@@ -114,7 +113,7 @@ export default {
 
     },
     handleSelectionChange: function (val) {
-      this.selectList = val
+      this.selectedList = val
     },
     // 更改每页数目
     handleSizeChange: function (val) {

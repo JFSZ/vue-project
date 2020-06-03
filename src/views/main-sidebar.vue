@@ -45,8 +45,7 @@ export default {
     }
   },
   components: {
-    SubMenu,
-    IconSvg
+    SubMenu
   },
   computed: {
     sidebarLayoutSkin: {
