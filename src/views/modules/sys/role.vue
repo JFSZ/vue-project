@@ -41,7 +41,7 @@
         prop="remark"
         header-align="center"
         align="center"
-        label="描述">
+        label="角色描述">
       </el-table-column>
       <el-table-column
         prop="createTime"
@@ -101,14 +101,20 @@ export default {
       }
       this.$api.get('/sys/role/list', dataList)
         .then(res => {
-          if (Object.is(res.code, 0)) {
+          if (res) {
             this.roleList = res.list
+            this.totalPage = res.totalPage
+          } else {
+            this.roleList = []
+            this.totalPage = 0
           }
         })
     },
+    // 新增/编辑
     addOrUpdateRole: function () {
 
     },
+    // 删除
     deleteRole: function () {
 
     },
