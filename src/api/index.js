@@ -65,7 +65,7 @@ axios.interceptors.response.use(response => {
         })
         break
       case 404:
-        router.push({name: 'login'})
+        router.push({name: '404'})
         break
       default:
         Message({

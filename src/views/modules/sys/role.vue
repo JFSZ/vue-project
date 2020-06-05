@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getRoleList()">
+      <el-form :inline="true" :model="dataForm" @keyup.enter.native="getRoleList()">
       <el-form-item>
         <el-input v-model="dataForm.roleName" placeholder="角色名" clearable></el-input>
       </el-form-item>
@@ -57,12 +57,13 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:user:update')" @click="addOrUpdateUser(scope.row.userId)" type="primary" icon="el-icon-edit" size="small"></el-button>
-          <el-button v-if="isAuth('sys:user:delete')" @click="deleteUser(scope.row.userId)" type="danger" icon="el-icon-delete" size="small"></el-button>
+          <el-button v-if="isAuth('sys:role:update')" @click="addOrUpdateRole(scope.row.roleId)" type="primary" icon="el-icon-edit" size="small"></el-button>
+          <el-button v-if="isAuth('sys:role:delete')" @click="deleteRole(scope.row.roleId)" type="danger" icon="el-icon-delete" size="small"></el-button>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination
+      style="text-align: center;margin-top: 20px"
       background
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -72,9 +73,11 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalPage">
     </el-pagination>
+    <role-add-or-update v-if="addOrUpdateVisible" ref="roleAddOrUpdate"></role-add-or-update>
   </div>
 </template>
 <script>
+import roleAddOrUpdate from './role_add_or_update'
 export default {
   data () {
     return {
@@ -82,11 +85,15 @@ export default {
         roleName: ''
       },
       selectedList: [], // 选中数据
-      roleList: [],
+      roleList: [], // 角色列表
       totalPage: 0, // 记录总条数
       pageSize: 10, // 每页记录数据
-      pageIndex: 1 // 当前页面数
+      pageIndex: 1, // 当前页面数
+      addOrUpdateVisible: false
     }
+  },
+  components: {
+    roleAddOrUpdate
   },
   activated () {
     this.getRoleList()
@@ -111,8 +118,11 @@ export default {
         })
     },
     // 新增/编辑
-    addOrUpdateRole: function () {
-
+    addOrUpdateRole: function (val) {
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.roleAddOrUpdate.init(val)
+      })
     },
     // 删除
     deleteRole: function () {

@@ -3,8 +3,7 @@
     :title="!userForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible"
-    width="620px"
-    append-to-body>
+    width="620px">
     <el-form :model="userForm" :rules="rules" ref="userForm" @keyup.enter.native="saveOrUpdate()" label-width="85px" size="small" :inline="true" >
       <el-form-item label="用户名" prop="userName">
         <el-input class="textarea" v-model="userForm.userName" placeholder="登录帐号"></el-input>

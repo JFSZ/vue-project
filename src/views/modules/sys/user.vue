@@ -84,6 +84,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
+      style="text-align: center;margin-top: 20px"
       background
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
