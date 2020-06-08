@@ -15,8 +15,9 @@
         <el-tree
         :data="menuList"
         :load="getMenuList"
-        lazy
+        :props="menuListProps"
         show-checkbox
+        ref="menuListTree"
         accordion
         node-key="menuId"></el-tree>
       </el-form-item>
@@ -29,6 +30,7 @@
 </template>
 
 <script>
+import { treeDataTranslate } from '@/utils'
 export default {
   name: 'roleAddOrUpdate',
   data () {
@@ -48,31 +50,38 @@ export default {
         roleName: '',
         remark: '',
         menuIdList: []
+      },
+      menuListProps: {
+        label: 'name',
+        children: 'children'
       }
     }
   },
   methods: {
     init: function (val) {
-      let data = {'roleId': val}
-      this.$api.get('/sys/menu/queryByRoleId' + val, data)
+      this.$api.get('/sys/menu/queryByRoleId', null)
         .then(res => {
+          console.log(res)
           if (Object.is(res.code, 0)) {
-            this.menuList = res.menuList
-            this.roleForm.roleName = res.role.roleName
-            this.roleForm.remark = res.role.remark
+            console.log(res.menuList)
+            this.menuList = treeDataTranslate(res.menuList, 'menuId')
+            console.log(res.menuList)
           }
         }).then(res => {
           this.visible = true
           this.$nextTick(() => {
             this.$refs['roleForm'].resetFields()
+            this.$refs.menuListTree.setCheckedKeys([])
           })
         }).then(res => {
           if (this.roleForm.id) {
             this.$api.get('/sys/role/info?roleId=' + val, null)
               .then(res => {
+                console.log(res)
                 if (Object.is(res.code, 0)) {
                   this.roleForm.roleName = res.role.roleName
                   this.roleForm.remark = res.role.remark
+                  this.roleForm.menuIdList = res.role.menuIdList
                 }
               })
           }

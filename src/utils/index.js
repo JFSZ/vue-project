@@ -24,7 +24,7 @@ export function isAuth (key) {
 /**
  * 树形数据转换
  * @param {*} data
- * @param {*} id
+ * @param {*} id 默认参数 为id
  * @param {*} pid
  */
 export function treeDataTranslate (data, id = 'id', pid = 'parentId') {
