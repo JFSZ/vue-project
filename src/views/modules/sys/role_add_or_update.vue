@@ -62,7 +62,7 @@ export default {
   methods: {
     init: function (val) {
       this.roleForm.id = val || 0
-      this.$api.get('/sys/menu/queryByRoleId', null)
+      this.$api.get('/sys/menu/list', null)
         .then(res => {
           if (Object.is(res.code, 0)) {
             this.menuList = treeDataTranslate(res.menuList, 'menuId')
