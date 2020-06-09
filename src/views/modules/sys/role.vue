@@ -14,6 +14,7 @@
     </el-form>
     <el-table
       border
+      v-loading="dataListLoading"
       :data="roleList"
       tooltip-effect="dark"
       @selection-change="handleSelectionChange"
@@ -73,7 +74,7 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalPage">
     </el-pagination>
-    <role-add-or-update v-if="addOrUpdateVisible" ref="roleAddOrUpdate"></role-add-or-update>
+    <role-add-or-update v-if="addOrUpdateVisible" ref="roleAddOrUpdate" @refreshDataList="getRoleList"></role-add-or-update>
   </div>
 </template>
 <script>
@@ -89,7 +90,8 @@ export default {
       totalPage: 0, // 记录总条数
       pageSize: 10, // 每页记录数据
       pageIndex: 1, // 当前页面数
-      addOrUpdateVisible: false
+      addOrUpdateVisible: false,
+      dataListLoading: false
     }
   },
   components: {
@@ -101,6 +103,7 @@ export default {
   methods: {
     // 获取所有角色列表
     getRoleList: function () {
+      this.dataListLoading = true
       let dataList = {
         page: this.pageIndex,
         limit: this.pageSize,
@@ -115,6 +118,7 @@ export default {
             this.roleList = []
             this.totalPage = 0
           }
+          this.dataListLoading = false
         })
     },
     // 新增/编辑
@@ -125,8 +129,36 @@ export default {
       })
     },
     // 删除
-    deleteRole: function () {
-
+    deleteRole: function (val) {
+      let data = val ? [val] : this.selectedList.map(item => {
+        return item.roleId
+      })
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.post('/sys/role/delete', JSON.stringify(data))
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!',
+                duration: 1500,
+                onClose: () => {
+                  this.getRoleList()
+                }
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '删除失败!'
+              })
+            }
+          })
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     },
     handleSelectionChange: function (val) {
       this.selectedList = val

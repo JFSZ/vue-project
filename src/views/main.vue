@@ -77,7 +77,6 @@ export default {
     getUserInfo () {
       this.$api.get('/sys/user/getUserInfo', null)
         .then(res => {
-          console.log(res)
           if (res && res.code === 0) {
             this.loading = false
             this.userId = res.user.userId
