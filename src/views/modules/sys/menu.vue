@@ -7,14 +7,15 @@
     </el-form>
     <el-table
       :data="meunList"
+      v-loading="dataListLoading"
       row-key="menuId"
-      border
-      :tree-props="treeProps">
+      default-expand-all
+      border>
         <el-table-column
         prop="name"
         label="菜单名称"
         header-align="center"
-        min-width="100">
+        width="200">
         </el-table-column>
       <el-table-column
         prop="parentName"
@@ -25,16 +26,17 @@
       </el-table-column>
       <el-table-column
         label="图标"
-        width="80"
+        width="100"
         header-align="center"
         align="center">
           <template slot-scope="scope">
-            <icon-svg :name="scope.row.icon"></icon-svg>
+            <icon-svg :name="scope.row.icon || ''"></icon-svg>
           </template>
       </el-table-column>
       <el-table-column
         prop="type"
         label="类型"
+        width="120"
         header-align="center"
         align="center">
         <template slot-scope="scope">
@@ -46,7 +48,7 @@
       <el-table-column
         prop="orderNum"
         label="排序号"
-        width="80"
+        width="100"
         header-align="center"
         align="center">
       </el-table-column>
@@ -56,13 +58,13 @@
         :show-overflow-tooltip="true"
         header-align="center"
         align="center"
-        width="150">
+        width="200">
       </el-table-column>
       <el-table-column
         prop="perms"
         header-align="center"
         align="center"
-        width="200"
+        min-width="200"
         :show-overflow-tooltip="true"
         label="授权标识">
       </el-table-column>
@@ -73,32 +75,37 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:menu:update')" type="text" size="small" @click="saveOrUpdate(scope.row.menuId)">修改</el-button>
-          <el-button v-if="isAuth('sys:menu:delete')" type="text" size="small" @click="delete(scope.row.menuId)">删除</el-button>
+          <el-button v-if="isAuth('sys:menu:update')" @click="saveOrUpdate(scope.row.roleId)" type="primary" icon="el-icon-edit" size="small"></el-button>
+          <el-button v-if="isAuth('sys:menu:delete')" @click="delete(scope.row.roleId)" type="danger" icon="el-icon-delete" size="small"></el-button>
         </template>
       </el-table-column>
     </el-table>
+    <add-or-update ref="AddOrUpdate" v-if="addOrUpdateVisible"></add-or-update>
   </div>
 </template>
 <script>
 import { treeDataTranslate } from '@/utils'
+import AddOrUpdate from './menu_add_or_update'
 export default {
   data () {
     return {
       meunList: [], // 菜单列表
       selectedList: [], // 选择的Id列表
       menuForm: {},
-      treeProps: {
-        children: 'children',
-        hasChildren: 'hasChildren'
-      }
+      dataListLoading: false,
+      addOrUpdateVisible: false,
+      menuExpandKey: [2]
     }
   },
   activated () {
     this.getMenuList()
   },
+  components: {
+    AddOrUpdate
+  },
   methods: {
     getMenuList: function () {
+      this.dataListLoading = true
       this.$api.get('/sys/menu/list', null)
         .then(res => {
           if (Object.is(res.code, 0)) {
@@ -106,12 +113,16 @@ export default {
           } else {
             this.meunList = []
           }
+          this.dataListLoading = false
         })
     },
     saveOrUpdate: function (val) {
-
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.AddOrUpdate.init(val)
+      })
     },
-    delete: function () {
+    delete: function (val) {
 
     }
   }

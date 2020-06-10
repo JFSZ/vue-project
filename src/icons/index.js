@@ -11,11 +11,14 @@
  *  1. 通过2-2 添加icons, getNameList方法无法返回对应数据
  */
 import Vue from 'vue'
-import IconSvg from '@/components/icon-svg'
+import IconSvg from '../components/icon-svg'
 import './iconfont.js'
 
 Vue.component('IconSvg', IconSvg)
 
+// require.context 获取一个特定的上下文,主要用来实现自动化导入模块
+//  require.context(directory, useSubdirectories = false, regExp = /^.//);
+// 参数: 1、directory 读取文件的路径 2、useSubdirectories 是否遍历文件的子目录 3、regExp 匹配文件的正则
 const svgFiles = require.context('./svg', true, /\.svg$/)
 const iconList = svgFiles.keys().map(item => svgFiles(item))
 
