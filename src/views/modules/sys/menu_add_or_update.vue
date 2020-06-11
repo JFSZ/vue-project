@@ -15,6 +15,7 @@
         </el-form-item>
         <el-form-item label="上级菜单" prop="parentName">
           <el-popover
+            width="200"
             ref="menuListPopover"
             placement="bottom-start"
             trigger="click">
@@ -25,8 +26,7 @@
               ref="menuListTree"
               accordion
               @current-change="menuListTreeCurrentChangeHandle"
-              :highlight-current="true"
-              >
+              :highlight-current="true">
               </el-tree>
           </el-popover>
           <el-input v-model="menuForm.parentName" v-popover:menuListPopover :readonly="true" placeholder="点击选择上级菜单" class="menu-list__input"></el-input>
@@ -126,15 +126,31 @@ export default {
           if (Object.is(res.code, 0)) {
             this.menuList = treeDataTranslate(res.menuList, 'menuId')
           }
-        }).then(res => {
+        }).then(() => {
           this.visible = true
           this.$nextTick(() => {
             this.$refs['menuForm'].resetFields()
           })
-        }).then(res => {
-          if (!this.menuList.id) {
+        }).then(() => {
+          if (!this.menuForm.id) {
             // 新增
             this.menuListTreeSetCurrentNode()
+          } else {
+            this.$api.get(`/sys/menu/info/${this.menuForm.id}`, null)
+              .then(res => {
+                console.log(res)
+                if (Object.is(res.code, 0)) {
+                  this.menuForm.id = res.sysMenu.menuId
+                  this.menuForm.name = res.sysMenu.name
+                  this.menuForm.type = res.sysMenu.type
+                  this.menuForm.url = res.sysMenu.url
+                  this.menuForm.parentName = res.sysMenu.parentName
+                  this.menuForm.perms = res.sysMenu.perms
+                  this.menuForm.icon = res.sysMenu.icon
+                  this.menuForm.orderNum = res.sysMenu.orderNum
+                  this.menuListTreeSetCurrentNode()
+                }
+              })
           }
         })
     },

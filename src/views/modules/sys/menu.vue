@@ -6,10 +6,10 @@
       </el-form-item>
     </el-form>
     <el-table
-      :data="meunList"
+      :data="menuList"
       v-loading="dataListLoading"
-      row-key="menuId"
-      default-expand-all
+      :row-key="getRowKey"
+      :expand-row-keys="menuExpandKey"
       border>
         <el-table-column
         prop="name"
@@ -75,8 +75,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:menu:update')" @click="saveOrUpdate(scope.row.roleId)" type="primary" icon="el-icon-edit" size="small"></el-button>
-          <el-button v-if="isAuth('sys:menu:delete')" @click="delete(scope.row.roleId)" type="danger" icon="el-icon-delete" size="small"></el-button>
+          <el-button v-if="isAuth('sys:menu:update')" @click="saveOrUpdate(scope.row.menuId)" type="primary" icon="el-icon-edit" size="small"></el-button>
+          <el-button v-if="isAuth('sys:menu:delete')" @click="delete(scope.row.menuId)" type="danger" icon="el-icon-delete" size="small"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -89,16 +89,26 @@ import AddOrUpdate from './menu_add_or_update'
 export default {
   data () {
     return {
-      meunList: [], // 菜单列表
+      menuList: [], // 菜单列表
       selectedList: [], // 选择的Id列表
       menuForm: {},
       dataListLoading: false,
       addOrUpdateVisible: false,
-      menuExpandKey: [2]
+      menuExpandKey: [],
+      getRowKey (row) {
+        return row.menuId
+      }
     }
   },
-  activated () {
+  created () {
     this.getMenuList()
+  },
+  activated () {
+    // this.getMenuList()
+  },
+  mounted () {
+    // 写死默认展开行数。解决Tab切换时，表格样式错乱
+    this.menuExpandKey.push('1')
   },
   components: {
     AddOrUpdate
@@ -109,9 +119,9 @@ export default {
       this.$api.get('/sys/menu/list', null)
         .then(res => {
           if (Object.is(res.code, 0)) {
-            this.meunList = treeDataTranslate(res.menuList, 'menuId')
+            this.menuList = treeDataTranslate(res.menuList, 'menuId')
           } else {
-            this.meunList = []
+            this.menuList = []
           }
           this.dataListLoading = false
         })
