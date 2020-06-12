@@ -56,7 +56,6 @@
 <script>
 import UpdatePassword from './main-navbar-update-password'
 import { clearLoginInfo } from '../utils'
-import IconSvg from '../components/icon-svg'
 export default {
   data () {
     return {
@@ -64,8 +63,7 @@ export default {
     }
   },
   components: {
-    UpdatePassword,
-    IconSvg
+    UpdatePassword
   },
   computed: {
     navbarLayoutType: {

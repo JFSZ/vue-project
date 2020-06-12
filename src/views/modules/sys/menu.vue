@@ -8,7 +8,7 @@
     <el-table
       :data="menuList"
       v-loading="dataListLoading"
-      :row-key="getRowKey"
+      row-key="menuId"
       :expand-row-keys="menuExpandKey"
       border>
         <el-table-column
@@ -76,11 +76,11 @@
         label="操作">
         <template slot-scope="scope">
           <el-button v-if="isAuth('sys:menu:update')" @click="saveOrUpdate(scope.row.menuId)" type="primary" icon="el-icon-edit" size="small"></el-button>
-          <el-button v-if="isAuth('sys:menu:delete')" @click="delete(scope.row.menuId)" type="danger" icon="el-icon-delete" size="small"></el-button>
+          <el-button v-if="isAuth('sys:menu:delete')" @click="deleteMenu(scope.row.menuId)" type="danger" icon="el-icon-delete" size="small"></el-button>
         </template>
       </el-table-column>
     </el-table>
-    <add-or-update ref="AddOrUpdate" v-if="addOrUpdateVisible"></add-or-update>
+    <add-or-update ref="AddOrUpdate" v-if="addOrUpdateVisible" @refreshDataList="getMenuList"></add-or-update>
   </div>
 </template>
 <script>
@@ -94,17 +94,11 @@ export default {
       menuForm: {},
       dataListLoading: false,
       addOrUpdateVisible: false,
-      menuExpandKey: [],
-      getRowKey (row) {
-        return row.menuId
-      }
+      menuExpandKey: []
     }
   },
-  created () {
-    this.getMenuList()
-  },
   activated () {
-    // this.getMenuList()
+    this.getMenuList()
   },
   mounted () {
     // 写死默认展开行数。解决Tab切换时，表格样式错乱
@@ -132,8 +126,35 @@ export default {
         this.$refs.AddOrUpdate.init(val)
       })
     },
-    delete: function (val) {
-
+    deleteMenu: function (val) {
+      let data = val ? [val] : this.selectedList.map(item => {
+        return item.menuId
+      })
+      console.log('===========' + val)
+      this.$confirm('此操作将永久删除该菜单, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.post('/sys/menu/delete', JSON.stringify(data))
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!',
+                duration: 1500,
+                onClose: () => {
+                  this.getMenuList()
+                }
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '删除失败!'
+              })
+            }
+          })
+      })
     }
   }
 }

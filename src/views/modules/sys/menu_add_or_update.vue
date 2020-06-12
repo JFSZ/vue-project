@@ -144,7 +144,7 @@ export default {
                   this.menuForm.name = res.sysMenu.name
                   this.menuForm.type = res.sysMenu.type
                   this.menuForm.url = res.sysMenu.url
-                  this.menuForm.parentName = res.sysMenu.parentName
+                  this.menuForm.parentId = res.sysMenu.parentId
                   this.menuForm.perms = res.sysMenu.perms
                   this.menuForm.icon = res.sysMenu.icon
                   this.menuForm.orderNum = res.sysMenu.orderNum
@@ -156,7 +156,34 @@ export default {
     },
     // 修改/保存
     saveOrUpdate: function () {
-
+      this.$refs['menuForm'].validate(valid => {
+        if (valid) {
+          let data = {
+            menuId: this.menuForm.id ? this.menuForm.id : undefined,
+            name: this.menuForm.name,
+            url: this.menuForm.url,
+            type: this.menuForm.type,
+            icon: this.menuForm.icon,
+            perms: this.menuForm.perms,
+            parentId: this.menuForm.parentId,
+            orderNum: this.menuForm.orderNum
+          }
+          this.$api.post(this.menuForm.id ? '/sys/menu/update' : '/sys/menu/save', data)
+            .then(res => {
+              if (Object.is(res.code, 0)) {
+                this.$message({
+                  type: 'success',
+                  message: (this.menuForm.id ? '更新' : '添加') + '成功!',
+                  duration: 1500,
+                  onClose: () => {
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
+              }
+            })
+        }
+      })
     },
     iconActiveHandle: function (iconName) {
       this.menuForm.icon = iconName

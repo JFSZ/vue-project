@@ -9,11 +9,11 @@ import {
 
 // 环境的切换
 if (process.env.NODE_ENV === 'development') { // 开发环境
-  axios.defaults.baseURL = 'http://localhost:8082/'
+  axios.defaults.baseURL = 'http://localhost:8082/zzadmin/'
 } else if (process.env.NODE_ENV === 'testing') { // 测试环境
   axios.defaults.baseURL = ''
 } else if (process.env.NODE_ENV === 'production') { // 生产环境
-  axios.defaults.baseURL = 'http://localhost:8083/'
+  axios.defaults.baseURL = 'http://localhost:8083/zzadmin/'
 }
 
 axios.create({

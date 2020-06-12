@@ -131,7 +131,7 @@ export default {
         }
       })
     },
-    // 获取角色权限
+    // 懒加载 获取角色权限
     getMenuList: function () {
 
     }
