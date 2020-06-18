@@ -161,10 +161,18 @@ export default {
     handleCurrentChange: function (val) {
       this.pageIndex = val
     },
+    // 暂停任务
     pauseJob: function (jobId) {
 
     },
+    // 恢复任务
+    resumeJob: function (jobId) {
 
+    },
+    // 执行任务
+    runJob: function (jobId) {
+
+    }
   }
 }
 </script>
