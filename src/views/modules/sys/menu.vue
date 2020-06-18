@@ -1,5 +1,5 @@
 <template>
-  <div class="mod-user">
+  <div class="mod-menu">
     <el-form>
       <el-form-item>
         <el-button v-if="isAuth('sys:menu:save')" type="success" @click="saveOrUpdate()">新增</el-button>

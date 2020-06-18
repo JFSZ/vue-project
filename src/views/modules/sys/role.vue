@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mod-role">
       <el-form :inline="true" :model="dataForm" @keyup.enter.native="getRoleList()">
       <el-form-item>
         <el-input v-model="dataForm.roleName" placeholder="角色名" clearable></el-input>
