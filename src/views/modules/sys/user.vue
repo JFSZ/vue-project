@@ -214,6 +214,12 @@ export default{
                 message: (val ? '禁用' : '激活') + '成功!',
                 type: 'success'
               })
+            } else {
+              this.$notify({
+                title: '成功',
+                message: (val ? '禁用' : '激活') + '失败!',
+                type: 'success'
+              })
             }
           }).catch(() => {
             data.status = !data.status

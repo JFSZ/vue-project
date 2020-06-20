@@ -7,6 +7,15 @@
       <el-form-item>
         <el-button @click="getJobList()" type="primary" icon="el-icon-search">查询</el-button>
         <el-button v-if="isAuth('job:schedule:save')" @click="addOrUpdateJob()" type="success">新增</el-button>
+        <el-button v-if="isAuth('job:schedule:pause')" @click="pauseJob()" type="danger"
+                   :disabled="selectedList.length <= 0">批量暂停
+        </el-button>
+        <el-button v-if="isAuth('job:schedule:resume')" @click="resumeJob()" type="danger"
+                   :disabled="selectedList.length <= 0">批量恢复
+        </el-button>
+        <el-button v-if="isAuth('job:schedule:run')" @click="runJob()" type="danger"
+                   :disabled="selectedList.length <= 0">批量执行
+        </el-button>
         <el-button v-if="isAuth('job:schedule:delete')" @click="deleteJob()" type="danger"
                    :disabled="selectedList.length <= 0">批量删除
         </el-button>
@@ -62,14 +71,8 @@
         align="center"
         label="任务状态">
         <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            disabled
-            active-value="0"
-            inactive-value="1"
-            active-color="#F56C6C"
-            inactive-color="#409EFF">
-          </el-switch>
+          <el-tag v-if="scope.row.status === 0" size="small">正常</el-tag>
+          <el-tag v-else size="small" type="danger">暂停</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -85,7 +88,7 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('job:schedule:update')" @click="addOrUpdateJob(scope.row.jobId)" type="text"  size="small">新增</el-button>
+          <el-button v-if="isAuth('job:schedule:update')" @click="addOrUpdateJob(scope.row.jobId)" type="text"  size="small">编辑</el-button>
           <el-button v-if="isAuth('job:schedule:delete')" @click="deleteJob(scope.row.jobId)" type="text"  size="small">删除</el-button>
           <el-button v-if="isAuth('job:schedule:pause')" type="text" size="small" @click="pauseJob(scope.row.jobId)">暂停</el-button>
           <el-button v-if="isAuth('job:schedule:resume')" type="text" size="small" @click="resumeJob(scope.row.jobId)">恢复</el-button>
@@ -104,10 +107,12 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalPage">
     </el-pagination>
+    <add-or-update ref="addOrUpdate" v-if="addOrUpdateVisible" @refreshDataList="getJobList"></add-or-update>
   </div>
 </template>
 
 <script>
+import addOrUpdate from './addOrUpdateSchedule'
 export default {
   name: 'schedule',
   data () {
@@ -118,11 +123,15 @@ export default {
       jobListLoading: false,
       totalPage: 0, // 记录总条数
       pageSize: 10, // 每页记录数据
-      pageIndex: 1 // 当前页面数
+      pageIndex: 1, // 当前页面数
+      addOrUpdateVisible: false
     }
   },
   activated () {
     this.getJobList()
+  },
+  components: {
+    addOrUpdate
   },
   methods: {
     getJobList: function () {
@@ -145,11 +154,42 @@ export default {
           this.jobListLoading = false
         })
     },
-    addOrUpdateJob: function (val) {
-
+    addOrUpdateJob: function (jobId) {
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(jobId)
+      })
     },
-    deleteJob: function (val) {
-
+    deleteJob: function (jobId) {
+      let data = jobId ? [jobId] : this.selectedList.map(item => {
+        return item.jobId
+      })
+      this.$confirm('此操作将删除该定时任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.post('/job/schedule/delete', JSON.stringify(data))
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!',
+                duration: 1500,
+                onClose: () => {
+                  this.getJobList()
+                }
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '删除失败!'
+              })
+            }
+          }).catch((err) => {
+            this.$message.error(err)
+          })
+      })
     },
     handleSelectionChange: function (val) {
       this.selectedList = val
@@ -163,15 +203,99 @@ export default {
     },
     // 暂停任务
     pauseJob: function (jobId) {
-
+      let data = jobId ? [jobId] : this.selectedList.map(item => {
+        return item.jobId
+      })
+      this.$confirm('此操作将暂停该定时任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.post('/job/schedule/pauseJob', JSON.stringify(data))
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$message({
+                type: 'success',
+                message: '暂停成功!',
+                duration: 1500,
+                onClose: () => {
+                  this.getJobList()
+                }
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '暂停失败!'
+              })
+            }
+          }).catch((err) => {
+            this.$message.error(err)
+          })
+      })
     },
     // 恢复任务
     resumeJob: function (jobId) {
-
+      let data = jobId ? [jobId] : this.selectedList.map(item => {
+        return item.jobId
+      })
+      this.$confirm('此操作将恢复该定时任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.post('/job/schedule/resumeJob', JSON.stringify(data))
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$message({
+                type: 'success',
+                message: '恢复成功!',
+                duration: 1500,
+                onClose: () => {
+                  this.getJobList()
+                }
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '恢复失败!'
+              })
+            }
+          }).catch((err) => {
+            this.$message.error(err)
+          })
+      })
     },
     // 执行任务
     runJob: function (jobId) {
-
+      let data = jobId ? [jobId] : this.selectedList.map(item => {
+        return item.jobId
+      })
+      this.$confirm('此操作将执行该定时任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.post('/job/schedule/runJob', JSON.stringify(data))
+          .then(res => {
+            if (Object.is(res.code, 0)) {
+              this.$message({
+                type: 'success',
+                message: '执行成功!',
+                duration: 1500,
+                onClose: () => {
+                  this.getJobList()
+                }
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '执行失败!'
+              })
+            }
+          })
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     }
   }
 }

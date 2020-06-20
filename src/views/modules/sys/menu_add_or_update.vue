@@ -138,7 +138,6 @@ export default {
           } else {
             this.$api.get(`/sys/menu/info/${this.menuForm.id}`, null)
               .then(res => {
-                console.log(res)
                 if (Object.is(res.code, 0)) {
                   this.menuForm.id = res.sysMenu.menuId
                   this.menuForm.name = res.sysMenu.name

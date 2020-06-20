@@ -126,6 +126,16 @@ export default {
                     this.$emit('refreshDataList')
                   }
                 })
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: (this.jobForm.id ? '更新' : '添加') + '失败!',
+                  duration: 1500,
+                  onClose: () => {
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               }
             })
         }
