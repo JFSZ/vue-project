@@ -19,6 +19,7 @@
         <el-button v-if="isAuth('job:schedule:delete')" @click="deleteJob()" type="danger"
                    :disabled="selectedList.length <= 0">批量删除
         </el-button>
+        <el-button v-if="isAuth('job:schedule:list')" @click="logHandle()" type="primary">任务日志</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -108,11 +109,13 @@
       :total="totalPage">
     </el-pagination>
     <add-or-update ref="addOrUpdate" v-if="addOrUpdateVisible" @refreshDataList="getJobList"></add-or-update>
+    <log v-if="logVisible" ref="log"></log>
   </div>
 </template>
 
 <script>
-import addOrUpdate from './addOrUpdateSchedule'
+import AddOrUpdate from './addOrUpdateSchedule'
+import Log from './scheduleLog'
 export default {
   name: 'schedule',
   data () {
@@ -124,14 +127,16 @@ export default {
       totalPage: 0, // 记录总条数
       pageSize: 10, // 每页记录数据
       pageIndex: 1, // 当前页面数
-      addOrUpdateVisible: false
+      addOrUpdateVisible: false,
+      logVisible: false
     }
   },
   activated () {
     this.getJobList()
   },
   components: {
-    addOrUpdate
+    AddOrUpdate,
+    Log
   },
   methods: {
     getJobList: function () {
@@ -146,7 +151,7 @@ export default {
           if (res) {
             console.log(res)
             this.jobList = res.list
-            this.totalPage = res.totalPage
+            this.totalPage = res.totalCount
           } else {
             this.jobList = []
             this.totalPage = 0
@@ -197,9 +202,11 @@ export default {
     handleSizeChange: function (val) {
       this.pageIndex = 1
       this.pageSizes = val
+      this.getJobList()
     },
     handleCurrentChange: function (val) {
       this.pageIndex = val
+      this.getJobList()
     },
     // 暂停任务
     pauseJob: function (jobId) {
@@ -295,6 +302,12 @@ export default {
           })
       }).catch((err) => {
         this.$message.error(err)
+      })
+    },
+    logHandle: function () {
+      this.logVisible = true
+      this.$nextTick(() => {
+        this.$refs.log.init()
       })
     }
   }

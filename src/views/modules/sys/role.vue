@@ -113,7 +113,7 @@ export default {
         .then(res => {
           if (res) {
             this.roleList = res.list
-            this.totalPage = res.totalPage
+            this.totalPage = res.totalCount
           } else {
             this.roleList = []
             this.totalPage = 0

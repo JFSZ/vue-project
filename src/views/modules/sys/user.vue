@@ -135,7 +135,7 @@ export default{
         .then(res => {
           if (res) {
             this.userList = res.list
-            this.totalPage = res.totalPage
+            this.totalPage = res.totalCount
           } else {
             this.userList = []
             this.totalPage = 0
