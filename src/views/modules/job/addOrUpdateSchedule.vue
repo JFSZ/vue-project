@@ -4,7 +4,7 @@
     :close-on-click-modal="false"
     :visible.sync="visible"
     width="620px">
-    <el-form :model="jobForm" :rules="rules" ref="roleForm" label-width="85px" size="small" :inline="true"
+    <el-form :model="jobForm" :rules="rules" ref="jobForm" label-width="85px" size="small" :inline="true"
              @keyup.enter.native="saveOrUpdate">
       <el-form-item label="任务名称" prop="beanName">
         <el-input v-model="jobForm.beanName" placeholder="定时任务Bean名称"></el-input>
@@ -33,10 +33,10 @@ export default {
     return {
       rules: {
         beanName: [
-          { required: true, message: '定时任务名称不能为空', trigger: 'blur' }
+          {required: true, message: '定时任务名称不能为空', trigger: 'blur'}
         ],
         cronExpression: [
-          { required: true, message: '定时任务表达式不能为空', trigger: 'blur' }
+          {required: true, message: '定时任务表达式不能为空', trigger: 'blur'}
         ]
       },
       jobForm: {
@@ -62,7 +62,7 @@ export default {
             this.jobForm.cronExpression = res.job.cronExpression
             this.jobForm.params = res.job.params
             this.jobForm.remark = res.job.remark
-            this.jobForm.status =  res.job.status
+            this.jobForm.status = res.job.status
           })
       }
     },
@@ -75,30 +75,34 @@ export default {
         remark: this.jobForm.remark,
         status: this.jobForm.status
       }
-      this.$api.post(this.jobForm.id ? '/job/schedule/update' : '/job/schedule/save', data)
-        .then(res => {
-          if (Object.is(res.code, 0)) {
-            this.$message({
-              type: 'success',
-              message: (this.jobForm.id ? '更新' : '添加') + '成功!',
-              duration: 1500,
-              onClose: () => {
-                this.visible = false
-                this.$emit('refreshDataList')
+      this.$refs['jobForm'].validate((valid) => {
+        if (valid) {
+          this.$api.post(this.jobForm.id ? '/job/schedule/update' : '/job/schedule/save', data)
+            .then(res => {
+              if (Object.is(res.code, 0)) {
+                this.$message({
+                  type: 'success',
+                  message: (this.jobForm.id ? '更新' : '添加') + '成功!',
+                  duration: 1500,
+                  onClose: () => {
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: (this.jobForm.id ? '更新' : '添加') + '失败!',
+                  duration: 1500,
+                  onClose: () => {
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               }
             })
-          } else {
-            this.$message({
-              type: 'error',
-              message: (this.jobForm.id ? '更新' : '添加') + '失败!',
-              duration: 1500,
-              onClose: () => {
-                this.visible = false
-                this.$emit('refreshDataList')
-              }
-            })
-          }
-        })
+        }
+      })
     }
   }
 }
