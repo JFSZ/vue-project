@@ -1,6 +1,6 @@
 <template>
   <div class="mod-config">
-    <el-form v-model="configForm" :inline="true" @keyup.enter.native="getConfigList()">
+    <el-form :model="configForm" :inline="true" @keyup.enter.native="getConfigList()">
       <el-form-item>
         <el-input v-model="configForm.paramKey" placeholder="参数名" clearable></el-input>
       </el-form-item>
@@ -9,7 +9,8 @@
         <el-button type="primary" @click="addOrUpdateConfig()">新增</el-button>
         <el-button type="danger" @click="deleteConfig()" :disabled="selectedList.length <= 0">批量删除</el-button>
       </el-form-item>
-      <el-table
+    </el-form>
+    <el-table
         :data="configList"
         border
         v-loading="configListLoading"
@@ -58,7 +59,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
+    <el-pagination
         @size-change="sizeChangeHandle"
         @current-change="currentChangeHandle"
         :current-page="pageIndex"
@@ -67,9 +68,8 @@
         :total="totalPage"
         layout="total, sizes, prev, pager, next, jumper">
       </el-pagination>
-      <!-- 弹窗, 新增 / 修改 -->
-      <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getConfigList"></add-or-update>
-    </el-form>
+    <!-- 弹窗, 新增 / 修改 -->
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getConfigList"></add-or-update>
   </div>
 </template>
 
@@ -82,7 +82,7 @@ export default {
       configForm: {
         paramKey: ''
       },
-      configList: {},
+      configList: [],
       selectedList: [],
       addOrUpdateVisible: false,
       configListLoading: false,
@@ -99,10 +99,12 @@ export default {
   },
   methods: {
     getConfigList: function () {
-      let data = {
-        paramKey: this.configForm.paramKey
+      let param = {
+        paramKey: this.configForm.paramKey,
+        page: this.pageIndex,
+        limit: this.pageSizes
       }
-      this.$api.get('/sys/config/list', data)
+      this.$api.get('/sys/config/list', param)
         .then(res => {
           if (res) {
             this.configList = res.list

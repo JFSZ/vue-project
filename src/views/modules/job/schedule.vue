@@ -149,7 +149,6 @@ export default {
       this.$api.get('/job/schedule/list', data)
         .then(res => {
           if (res) {
-            console.log(res)
             this.jobList = res.list
             this.totalPage = res.totalCount
           } else {
