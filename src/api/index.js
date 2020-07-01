@@ -40,7 +40,7 @@ axios.interceptors.response.use(response => {
     Message({
       message: response.data.msg,
       type: 'error',
-      duration: 2 * 1000,
+      duration: 1500,
       onClose: () => {
         clearLoginInfo()
         router.push({name: 'login'})
@@ -94,10 +94,8 @@ function get (url, params) {
     axios.get(url, {
       params: params
     }).then(res => {
-      console.log('get 请求' + url + '成功')
       resolve(res.data)
     }).catch(err => {
-      console.log('get 请求' + url + '异常')
       reject(err.data)
     })
   })
@@ -105,7 +103,6 @@ function get (url, params) {
 
 // post 请求
 function post (url, params) {
-  console.log('请求路径为:' + url)
   return new Promise((resolve, reject) => {
     axios.post(url, params)
       .then(res => {
