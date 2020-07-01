@@ -1,11 +1,11 @@
 import axios from 'axios'
-import Vue from 'vue'
 import router from '../router'
 import {clearLoginInfo} from '../utils'
 import {
   Message,
   MessageBox
 } from 'element-ui'
+import store from '../store'
 
 // 环境的切换
 if (process.env.NODE_ENV === 'development') { // 开发环境
@@ -17,14 +17,13 @@ if (process.env.NODE_ENV === 'development') { // 开发环境
 }
 
 axios.create({
-  timeout: 1000 * 30,
-  withCredentials: true // 允许服务器使用cookies
+  timeout: 1000 * 30
 })
 
 // 请求拦截
 axios.interceptors.request.use(config => {
-  if (Vue.cookie.get('token')) {
-    config.headers['token'] = Vue.cookie.get('token') // 请求头带上token
+  if (store.getters.getToken) {
+    config.headers['token'] = store.getters.getToken // 请求头带上token
   } else {
     router.push({name: 'login'})
   }
@@ -37,6 +36,17 @@ axios.interceptors.request.use(config => {
 // 响应拦截
 axios.interceptors.response.use(response => {
   // 成功处理
+  if (Object.is(response.data.code, 401)) {
+    Message({
+      message: response.data.msg,
+      type: 'error',
+      duration: 2 * 1000,
+      onClose: () => {
+        clearLoginInfo()
+        router.push({name: 'login'})
+      }
+    })
+  }
   return response
 }, error => {
   if (error && error.response) {
@@ -84,8 +94,10 @@ function get (url, params) {
     axios.get(url, {
       params: params
     }).then(res => {
+      console.log('get 请求' + url + '成功')
       resolve(res.data)
     }).catch(err => {
+      console.log('get 请求' + url + '异常')
       reject(err.data)
     })
   })

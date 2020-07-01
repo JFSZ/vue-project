@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import {clearLoginInfo} from '../utils/index'
 import { isURL } from '@/utils/validate'
 import http from '../api'
+import store from '../store'
 
 Vue.use(Router)
 // 解决路由跳转报错:Uncaught (in promise) NavigationDuplicated
@@ -32,7 +33,7 @@ const mainRoutes = {
     { path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } } */
   ],
   beforeEnter (to, from, next) {
-    let token = Vue.cookie.get('token')
+    let token = store.getters.getToken
     if (!token || !/\S/.test(token)) {
       clearLoginInfo()
       next({ name: 'login' })

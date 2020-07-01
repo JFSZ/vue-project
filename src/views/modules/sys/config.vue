@@ -114,6 +114,8 @@ export default {
             this.totalPage = 0
           }
           this.configListLoading = false
+        }).catch((err) => {
+          this.$message.error(err)
         })
     },
     sizeChangeHandle: function (val) {
@@ -126,10 +128,10 @@ export default {
     handleSelectionChange: function (val) {
       this.selectedList = val
     },
-    addOrUpdateConfig: function (ids) {
+    addOrUpdateConfig: function (id) {
+      this.addOrUpdateVisible = true
       this.$nextTick(() => {
-        this.addOrUpdateVisible = true
-        this.$refs.addOrUpdate.init()
+        this.$refs.addOrUpdate.init(id)
       })
     },
     deleteConfig: function (ids) {

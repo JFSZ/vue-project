@@ -18,6 +18,7 @@ const store = new Vuex.Store({
   mutations: {
     setToken: (state, token) => {
       state.token = token
+      localStorage.token = token
     }
   },
   // 异步操作

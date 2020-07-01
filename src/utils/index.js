@@ -1,4 +1,5 @@
 import router from '@/router'
+import store from '../store'
 /**
  * 获取uuid
  */
@@ -9,6 +10,7 @@ export function getUUID () {
 }
 
 export function clearLoginInfo () {
+  store.commit('setToken', '')
   router.options.isAddDynamicMenuRoutes = false
 }
 

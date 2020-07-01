@@ -58,6 +58,8 @@ export default {
                 this.configForm.paramValue = res.sysConfig.paramValue
                 this.configForm.remark = res.sysConfig.remark
               }
+            }).catch((err) => {
+              this.$message.error(err)
             })
         }
       })
@@ -94,6 +96,8 @@ export default {
                   }
                 })
               }
+            }).catch((err) => {
+              this.$message.error(err)
             })
         }
       })

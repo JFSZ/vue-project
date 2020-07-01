@@ -12,12 +12,10 @@ import '@/assets/scss/index.scss'
 import 'element-ui/lib/theme-chalk/index.css'
 import { isAuth } from './utils'
 import './utils/filter'
-import VueCookie from 'vue-cookie'
 
 /* Vue.config.productionTip = false */
 Vue.prototype.$api = api
 Vue.use(ElementUI)
-Vue.use(VueCookie)
 // 阻止启动时在浏览器控制台打印生产消息
 Vue.config.productionTip = false
 Vue.prototype.isAuth = isAuth // 权限方法

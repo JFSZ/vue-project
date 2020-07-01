@@ -82,11 +82,11 @@ export default {
             .then(res => {
               if (res && Object.is(res.code, 0)) {
                 let token = res.token
-                this.$cookie.set('token', token)
+                this.$store.commit('setToken', token)
                 _this.$router.push({name: 'home'})
               } else {
                 _this.getCaptcha()
-                _this.$message.error(data.msg)
+                _this.$message.error(res.msg)
               }
             }).catch((err) => {
               _this.$message.error(err)
