@@ -58,23 +58,30 @@ router.beforeEach((to, from, next) => {
   if (router.options.isAddDynamicMenuRoutes || fnCurrentRouteType(to, globalRoutes) === 'global') {
     next()
   } else {
-    http.get('/sys/menu/nav', null)
-      .then(res => {
-        if (res && res.code === 0) {
-          fnAddDynamicMenuRoutes(res.menuList)
-          router.options.isAddDynamicMenuRoutes = true
-          sessionStorage.setItem('menuList', JSON.stringify(res.menuList || '[]'))
-          sessionStorage.setItem('permissions', JSON.stringify(res.permissions || '[]'))
-          next({ ...to, replace: true })
-        } else {
-          sessionStorage.setItem('menuList', '[]')
-          sessionStorage.setItem('permissions', '[]')
-          next()
-        }
-      }).catch((e) => {
-        console.log(`%c${e} 请求菜单列表和权限失败，跳转至登录页！！`, 'color:blue')
-        router.push({ name: 'login' })
-      })
+    // 解决 /跳转时会访问/sys/menu/nav 导致的401报错问题
+    let token = store.getters.getToken
+    if (!token || !/\S/.test(token)) {
+      clearLoginInfo()
+      next({ name: 'login' })
+    } else {
+      http.get('/sys/menu/nav', null)
+        .then(res => {
+          if (res && res.code === 0) {
+            fnAddDynamicMenuRoutes(res.menuList)
+            router.options.isAddDynamicMenuRoutes = true
+            sessionStorage.setItem('menuList', JSON.stringify(res.menuList || '[]'))
+            sessionStorage.setItem('permissions', JSON.stringify(res.permissions || '[]'))
+            next({ ...to, replace: true })
+          } else {
+            sessionStorage.setItem('menuList', '[]')
+            sessionStorage.setItem('permissions', '[]')
+            next()
+          }
+        }).catch((e) => {
+          console.log(`%c${e} 请求菜单列表和权限失败，跳转至登录页！！`, 'color:blue')
+          router.push({ name: 'login' })
+        })
+    }
   }
 })
 

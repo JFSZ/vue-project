@@ -201,23 +201,23 @@ export default{
       this.getUserList()
     },
     editUser: function (data, val) {
-      this.$confirm('此操作将 "' + (val ? '禁用' : '激活') + '" ' + data.username + ', 是否继续？', '提示', {
+      this.$confirm('此操作将 "' + (!val ? '禁用' : '激活') + '" ' + data.username + ', 是否继续？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(res => {
-        this.$api.post('/sys/user/update', JSON.stringify(data))
+        this.$api.post('/sys/user/updateUserStatus', JSON.stringify(data))
           .then(res => {
             if (Object.is(res.code, 0)) {
               this.$notify({
                 title: '成功',
-                message: (val ? '禁用' : '激活') + '成功!',
+                message: (!val ? '禁用' : '激活') + '成功!',
                 type: 'success'
               })
             } else {
               this.$notify({
                 title: '成功',
-                message: (val ? '禁用' : '激活') + '失败!',
+                message: (!val ? '禁用' : '激活') + '失败!',
                 type: 'success'
               })
             }
