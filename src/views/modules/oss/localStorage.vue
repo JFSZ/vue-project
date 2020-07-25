@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getLocalFile()">
       <el-form-item>
-        <el-input v-model="dataForm.userName" placeholder="请输入查询内容" clearable></el-input>
+        <el-input v-model="dataForm.name" placeholder="请输入查询内容" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getLocalFile()" type="primary" icon="el-icon-search">查询</el-button>
@@ -85,10 +85,12 @@
         </template>
       </el-table-column>
     </el-table>
+    <Upload v-if="visible" ref="Upload" @refreshDataList="getLocalFile()"></Upload>
   </div>
 </template>
 
 <script>
+import Upload from './upload'
 export default {
   name: 'localStorage',
   data () {
@@ -96,16 +98,22 @@ export default {
       dataForm: {},
       selectedList: [],
       dataListLoading: false,
-      dataList: []
+      dataList: [],
+      visible: false
     }
   },
+  components: {Upload},
   methods: {
     // 获取本地存储列表
     getLocalFile: function () {
 
     },
     // 上传
-    uploadLocal: function () {
+    uploadLocal: function (val) {
+      this.visible = true
+      this.$nextTick(() => {
+        this.$refs.Upload.init(val)
+      })
     },
     // 删除存储
     deleteStorage: function (val) {
