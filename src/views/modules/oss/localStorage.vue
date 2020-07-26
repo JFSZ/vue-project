@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getLocalFile()" type="primary" icon="el-icon-search">查询</el-button>
-        <el-button v-if="isAuth('sys:oss:upload')" @click="uploadLocal()" type="success">上传</el-button>
-        <el-button v-if="isAuth('sys:oss:delete')" @click="deleteStorage()" type="danger"
+        <el-button v-if="isAuth('sys:oss:all')" @click="uploadLocal()" type="success">上传</el-button>
+        <el-button v-if="isAuth('sys:oss:all')" @click="deleteStorage()" type="danger"
                    :disabled="selectedList.length <= 0">批量删除
         </el-button>
       </el-form-item>
@@ -80,8 +80,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:oss:update')" @click="editStorage(scope.row.id)" type="primary" icon="el-icon-edit" size="small"></el-button>
-          <el-button v-if="isAuth('sys:oss:delete')" @click="deleteStorage(scope.row.id)" type="danger" icon="el-icon-delete" size="small"></el-button>
+          <el-button v-if="isAuth('sys:oss:all')" @click="editStorage(scope.row.id)" type="primary" icon="el-icon-edit" size="small"></el-button>
+          <el-button v-if="isAuth('sys:oss:all')" @click="deleteStorage(scope.row.id)" type="danger" icon="el-icon-delete" size="small"></el-button>
         </template>
       </el-table-column>
     </el-table>
