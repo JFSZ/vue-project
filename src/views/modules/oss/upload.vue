@@ -78,6 +78,8 @@ export default {
           duration: 1500,
           onClose: () => {
             this.visible = false
+            this.$refs.upload.clearFiles()
+            this.dataForm.name = ''
             this.$emit('refreshDataList')
           }
         })

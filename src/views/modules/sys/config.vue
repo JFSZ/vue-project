@@ -60,6 +60,7 @@
         </el-table-column>
       </el-table>
     <el-pagination
+      style="text-align: center;margin-top: 20px"
         @size-change="sizeChangeHandle"
         @current-change="currentChangeHandle"
         :current-page="pageIndex"
